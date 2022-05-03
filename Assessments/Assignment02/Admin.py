@@ -102,17 +102,56 @@ class Admin(User):
             # print(type(duration_list[0]))
         with open("data/result/course.txt", "w", encoding="utf-8") as courseFileWriter:
             for iter in range(len(course_id_list)):
-                courseFileWriter.writelines(str(course_id_list[iter])+";;;"
-                                                +str(course_title_list[iter])
-                                                +";;;"+str(image_list[iter])
-                                                +";;;"+str(headline_list[iter])
-                                                +";;;"+str(sub_list[iter])
-                                                +";;;"+str(rating_list[iter])
-                                                +";;;"+str(duration_list[iter])+"\n")
-        with open("data/result/course.txt", "r", encoding="utf-8") as courseFileReader:
-            print(courseFileReader.read())
+                courseFileWriter.writelines(str(course_id_list[iter]) + ";;;"
+                                                    + str(course_title_list[iter])
+                                                    + ";;;" + str(image_list[iter])
+                                                    + ";;;" + str(headline_list[iter])
+                                                    + ";;;" + str(rating_list[iter])
+                                                    + ";;;" + str(sub_list[iter])
+                                                    + ";;;" + str(duration_list[iter]) 
+                                                    + "\n")
+        # with open("data/result/course.txt", "r", encoding="utf-8") as courseFileReader:
+        #     print(courseFileReader.read())
+        return None
+    
+    def extract_review_info(self):
+        review_id_list = []
+        content_list = []
+        rating_list = []
+        course_id_list = []
+        # print(content_list, rating_list, review_id_list, course_id_list)
+        for jsonfile in os.listdir(os.getcwd()+"/data/review_data"):
+            with open(os.path.join(os.getcwd()+"/data/review_data", jsonfile), 'r', encoding="utf-8") as reviewFile:
+                review_id_pattern = re.compile(r'w", "id": (\d+?),')
+                matches = review_id_pattern.finditer(reviewFile.read())
+                for match in matches:
+                    review_id_list.append(match.groups('1')[0])
+                reviewFile.seek(0, 0)
+                content_pattern = re.compile(r'review", (.+?)t": "(.*?)", "rating')
+                matches = content_pattern.finditer(reviewFile.read())
+                for match in matches:
+                    content_list.append(match.groups()[1])
+                    # print(match.groups()[1])
+                reviewFile.seek(0, 0)
+                rating_pattern = re.compile(r'g": (\d+?\.?\d*?),')
+                matches = rating_pattern.finditer(reviewFile.read())
+                for match in matches:
+                    rating_list.append(match.groups()[0])
+                    course_id_list.append(jsonfile.split('.')[0])
+        # print(course_id_list[10000:10050])
+        # print(len(course_id_list))
+        with open("data/result/review.txt", "w", encoding="utf-8") as reviewFileWriter:
+            for iter in range(len(review_id_list)):
+                reviewFileWriter.writelines(str(review_id_list[iter]) + ";;;"
+                                                    + str(content_list[iter])
+                                                    + ";;;" + str(rating_list[iter])
+                                                    + ";;;" + str(course_id_list[iter]) 
+                                                    + "\n")
+        # with open("data/result/review.txt", "r", encoding="utf-8") as reviewFileReader:
+        #     print(reviewFileReader.read(10000))
         return None
 
 a = Admin()
 # a.register_admin()
-a.extract_course_info()
+# a.extract_course_info()
+# a.extract_review_info()
