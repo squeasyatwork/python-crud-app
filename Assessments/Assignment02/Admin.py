@@ -151,7 +151,127 @@ class Admin(User):
         #     print(reviewFileReader.read(10000))
         return None
 
+    def extract_students_info(self):
+        stud_id_list = []
+        un_list = []
+        pw_list = []
+        title_list = []
+        image_list = []
+        initials_list = []
+        rev_id_list = []
+        i = 0
+        # First call extract_instructor_info() and generate user_instructor.txt
+        """
+        Now retrieve all the students who have an id in the json review strings       
+        and generate the user_student.txt file.
+        Now, retrieve all students wiithout an id in the json review strings
+        and generate unique student id's fore them.
+        """
+
+        for jsonfile in os.listdir(os.getcwd()+"/data/review_data"):
+            with open(os.path.join(os.getcwd()+"/data/review_data", jsonfile), 'r', encoding="utf-8") as reviewFile:
+                stud_id_pattern = re.compile(r'"user(.*?)", "user": {"_class": "user", ("id": (\d{0,10}), )?')
+                matches = stud_id_pattern.finditer(reviewFile.read())
+                for match in matches:
+                    # i += 1
+                    # print(match.groups())
+                    # if(i>100):
+                    #     break
+                    i+=1
+                    if(not(match.groups()[2] is None)): # true if ID exists
+                        # print(match.groups()[2], end=" ")
+                        stud_id_list.append(match.groups()[2])
+                        # i += 1
+                reviewFile.seek(0, 0)
+                title_pattern = re.compile(r'"user_modified"(.*?)"title": "(.+?)"')
+                matches = title_pattern.finditer(reviewFile.read())
+                for match in matches:
+                    un_list.append(match.groups()[1].lower().replace(" ", "_"))
+                    # print(match.groups()[1])
+                reviewFile.seek(0, 0)
+                pw_pattern = re.compile(r'"initials": "(.{0,10})"}, "response":')
+                # pw_pattern = re.compile(r'"user_modified"(.*?)"initials": "(.{0,10})"}')
+                matches = pw_pattern.finditer(reviewFile.read())
+                i = 0
+                for match in matches:
+                    if (match.groups()[0] is None):
+                        i += 1
+                    else:
+                        pw_list.append(match.groups()[0].lower())
+                        # print(match.groups()[1])
+        print(i)
+        print(pw_list[140000:160000])
+        print("len",len(pw_list))
+
+        # for jsonfile in os.listdir(os.getcwd()+"/data/review_data"):
+        #     with open(os.path.join(os.getcwd()+"/data/review_data", jsonfile), 'r', encoding="utf-8") as reviewFile:
+        #         stud_id_pattern = re.compile(r'"user(.*?)", "user": {"_class": "user", ("id": (\d{0,10}), )?')
+        #         matches = stud_id_pattern.finditer(reviewFile.read())
+        #         for match in matches:
+        #             # i += 1
+        #             # print(match.groups())
+        #             # if(i>100):
+        #             #     break
+        #             i+=1
+        #             if(match.groups()[2] is None): # true if ID does not exist
+        #                 stud_id_list.append(self.generate_user_id()
+        #                 # print(match.groups()[2], end=" ")
+        #                 # i += 1
+        return None
+
+    def extract_instructor_info(self):
+        with open("data/course_data/raw_data.txt", "r", encoding="utf-8") as courseFile:
+            itr_pattern = re.compile(r'tors":\[{(.*?)("image_100x100":"(.*?)",|"display_name":"(.*?)",|"job_title":"(.*?)",|"id":(\d*?),)(.*?)("image_100x100":"(.*?)",|"display_name":"(.*?)",|"job_title":"(.*?)",|"id":(.*?),)(.*?)("image_100x100":"(.*?)",|"display_name":"(.*?)",|"job_title":"(.*?)",|"id":(.*?),)(.*?)("image_100x100":"(.*?)"|"display_name":"(.*?)"|"job_title":"(.*?)"|"id":(.*?))(.*?)}\]')
+            # itr_id_pattern = re.compile(r'tors":.*?"id":(\d*?),')
+            matches = itr_pattern.finditer(courseFile.read())
+            itr_entry_list = []
+            itr_id_list = []
+            itr_string = ''
+            itr_dict = {}
+            # id displayname jobtitle image courses
+            i=0
+            for match in matches:
+                flag = 0
+                i += 1
+                # if(i%100)==0:
+                #     # print( sorted(list(filter(None, list(match.groups())))) , end="\n\n" )
+                #     sorted_entry = sorted(list(filter(None, list(match.groups()))))
+                #     # itr_details = [i.split(',')[0].split(':')]
+                #     for iter in range(len(sorted_entry)):
+                #         sorted_entry[iter] = sorted_entry[iter].rstrip(',')
+                #         # print(item.rstrip(","))
+                #     print(sorted_entry)
+                sorted_entry = sorted(list(filter(None, list(match.groups()))))
+                for iter in range(len(sorted_entry)):
+                    sorted_entry[iter] = sorted_entry[iter].rstrip(',')
+                # Checking if instructor already exists in dictionary itr_dict
+                for item in sorted_entry:
+                    if item.startswith('"id":'):
+                        if (len(item.split(":")[1])>0) and (item.split(":")[1] not in itr_id_list):
+                            flag = 1
+                            itr_id  = item.split(":")[1]
+                        else:
+                            flag = 0
+                if  flag == 1:
+                    itr_name = ''
+
+                    for item in sorted_entry:
+                        if item.startswith('"display_name":'):
+                            itr_name = item.split(":")[1]
+    
+                    itr_dict[itr_id] = itr_name
+            
+                            
+                itr_entry_list.append(sorted_entry)
+            # print(match.groups())
+            print(itr_dict['1364522'])
+            # print(itr_id_list[1000:3000])
+            
+        return None
+
 a = Admin()
 # a.register_admin()
 # a.extract_course_info()
 # a.extract_review_info()
+# a.extract_students_info()
+a.extract_instructor_info()

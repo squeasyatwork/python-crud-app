@@ -28,24 +28,21 @@ class User():
                with open("user_student.txt", "r") as filestreamthree:
                   for line in filestreamone:
                      line_id = line.split(";;;")[0]
-                     for i in number_list:
+                     if user_id == line_id: # not unique, stop 
+                        flag = 1
+                        break
+                  if flag == 0:
+                     for line in filestreamtwo:
+                        line_id = line.split(";;;")[0]
                         if user_id == line_id: # not unique, stop 
                            flag = 1
                            break
                   if flag == 0:
-                     for line in filestreamone:
+                     for line in filestreamthree:
                         line_id = line.split(";;;")[0]
-                        for i in number_list:
-                              if user_id == line_id: # not unique, stop 
-                                 flag = 1
-                                 break
-                  if flag == 0:
-                     for line in filestreamone:
-                        line_id = line.split(";;;")[0]
-                        for i in number_list:
-                              if user_id == line_id: # not unique, stop 
-                                 flag = 1
-                                 break
+                        if user_id == line_id: # not unique, stop 
+                           flag = 1
+                           break
                   if flag == 0:
                         # print("Unique ==> added")
                         break
