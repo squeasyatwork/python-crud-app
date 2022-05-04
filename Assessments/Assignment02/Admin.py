@@ -9,7 +9,7 @@ class Admin(User):
     def register_admin(self):
         username = input("Enter username:")
         flag = 0
-        with open("user_admin.txt", "r") as adminFile:
+        with open("user_admin.txt", "r+") as adminFile:
             pattern = re.compile(r';((\w)+);')
             matches = pattern.finditer(adminFile.read())
             for match in matches:
@@ -157,8 +157,8 @@ class Admin(User):
         pw_list = []
         title_list = []
         image_list = []
-        initials_list = []
-        rev_id_list = []
+        inits_list = []
+        review_list = []
         i = 0
         # First call extract_instructor_info() and generate user_instructor.txt
         """
@@ -177,46 +177,125 @@ class Admin(User):
                     # print(match.groups())
                     # if(i>100):
                     #     break
-                    i+=1
-                    if(not(match.groups()[2] is None)): # true if ID exists
+                    # i+=1
+                    # if(not(match.groups()[2] is None)): # true if ID exists
                         # print(match.groups()[2], end=" ")
-                        stud_id_list.append(match.groups()[2])
+                    stud_id_list.append(match.groups()[2])
                         # i += 1
+                # generating usernames and adding to un_list, also building title_list in parallel
                 reviewFile.seek(0, 0)
                 title_pattern = re.compile(r'"user_modified"(.*?)"title": "(.+?)"')
                 matches = title_pattern.finditer(reviewFile.read())
                 for match in matches:
+                    title_list.append(match.groups()[1])
                     un_list.append(match.groups()[1].lower().replace(" ", "_"))
                     # print(match.groups()[1])
                 reviewFile.seek(0, 0)
-                pw_pattern = re.compile(r'"initials": "(.{0,10})"}, "response":')
-                # pw_pattern = re.compile(r'"user_modified"(.*?)"initials": "(.{0,10})"}')
+                # pw_pattern = re.compile(r'"initials": "(.{0,10})"}, "response":')
+                # w_pattern = re.compile(r'"initials": "(.{0,10})"}, "response":')
+                pw_pattern = re.compile(r'"user_modified".*?"image_50x50":(.*?)"(, "initials": "(.{0,10})"\}|\}), "resp')
                 matches = pw_pattern.finditer(reviewFile.read())
                 i = 0
                 for match in matches:
-                    if (match.groups()[0] is None):
-                        i += 1
-                    else:
-                        pw_list.append(match.groups()[0].lower())
-                        # print(match.groups()[1])
-        print(i)
-        print(pw_list[140000:160000])
-        print("len",len(pw_list))
+                    # # if (match.groups()[0] is None):
+                    # #     i += 1
+                    # # else:
+                    # #     pw_list.append(match.groups())
+                    # #     # print(match.groups()[1])
+                    # if len(match.groups())>=0:
+                    #     i += 1
+                    #     pw_list.append(match.groups()[len(match.groups())-1])
+                    #     # print(match.groups()[1])
+                    # pw_list.append(sorted(list(filter(None, match.groups()))))
+                    # i += 1
+                    # if i % 1000 == 0:
+                    #     print(match.groups(), end="\n\n")
+                    pw_list.append(match.groups()[2])
+                # Obtaining user_image and storing it in image_list
+                reviewFile.seek(0, 0)
+                image_pattern = re.compile(r'"user_modified".*?"image_50x50":(.*?)"(, "initials": "(.{0,10})"\}|\}), "resp')
+                matches = pw_pattern.finditer(reviewFile.read())
+                i = 0
+                for match in matches:
+                    i += 1
+                    # print(match.groups()[0],end="\n\n")
+                    image_list.append(match.groups()[0])
+                # print(image_list,end="\n\n")
+                # Obtaining review id and storing it in review_id_list
+                reviewFile.seek(0, 0)
+                review_id_pattern = re.compile(r'w", "id": (\d+?),')
+                matches = review_id_pattern.finditer(reviewFile.read())
+                for match in matches:
+                    review_list.append(match.groups('1')[0])
+        """
+        By this point, we have lists of all students' id, username, and password
+        Now we need to generate the None valued student id's first
+        Then we need to build the passwords as <initials + id + initials>
+        Next, we can go ahead and obtain user image and their review_id
+        Lastly, we can iterate through these lists and build student strings
+            to write them in user_student.txt
+        """
+        # Generate the temporary student id file to search for uniqueness of ID later on
+        # with open('user_student.txt', 'r+', encoding='utf-8') as studFile:
+        #     for i in stud_id_list:
+        #         if i is not None:
+        #             studFile.writelines(i+"\n")
+        # Now we generate unique student id and update them in the stud_id_list in place 
+        iter = 0
+        for iter in range(len(stud_id_list)):
+            if stud_id_list[iter] is None:
+                stud_id_list[iter] = self.generate_user_id()
+                # print(iter, "changed to ", stud_id_list[iter], end="\n\n")
+        # for i in stud_id_list:
+        #         if i is None:
+        #             print(i)
+        # Now we have the complete None-free stud_id_list
+        # Now we build the passwords in the format specified above
+        iter = 0
+        # generating the final pw_list
+        for iter in range(len(stud_id_list)):
+            if pw_list[iter] is None:
+                pw_list[iter] = ''
+            # building inits_list before we lose initials value from pw_list
+            inits_list.append(pw_list[iter])
+            inits = pw_list[iter].lower()
+            ids = stud_id_list[iter].lower()
+            real_pw = self.encryption(inits + ids + inits)
+            # print(real_pw,end="\n\n")
+            pw_list[iter] = real_pw
+            # if iter == 1000:
+            #     print(pw_list[iter],end="\n\n")
+        
+        # for i,j in pw_list,stud_id_list:
+        #     i = i + j + i
 
-        # for jsonfile in os.listdir(os.getcwd()+"/data/review_data"):
-        #     with open(os.path.join(os.getcwd()+"/data/review_data", jsonfile), 'r', encoding="utf-8") as reviewFile:
-        #         stud_id_pattern = re.compile(r'"user(.*?)", "user": {"_class": "user", ("id": (\d{0,10}), )?')
-        #         matches = stud_id_pattern.finditer(reviewFile.read())
-        #         for match in matches:
-        #             # i += 1
-        #             # print(match.groups())
-        #             # if(i>100):
-        #             #     break
-        #             i+=1
-        #             if(match.groups()[2] is None): # true if ID does not exist
-        #                 stud_id_list.append(self.generate_user_id()
-        #                 # print(match.groups()[2], end=" ")
-        #                 # i += 1
+
+        # print(i)
+        # for i in stud_id_list:
+        #     if i is None:
+        #         print(i)
+        # for iter in range(len(stud_id_list)):
+        #     # pw_list[iter] = pw_list[iter]+stud_id_list[iter]+pw_list[iter]
+        #     print(pw_list[iter]+stud_id_list[iter]+pw_list[iter],end="\n\n")
+        # print("id_list length: ",len(stud_id_list))
+        # print("un_list length: ",len(un_list))
+        # print("pw_list length: ",len(pw_list))
+        # print("title_list length: ",len(title_list))
+        # print("image_list length: ",len(image_list))
+        # print("inits_list length: ",len(inits_list))
+        # print("review_list length: ",len(review_list))
+        # print("review_list length: ",review_list[1000:1100])
+
+        # Building student strings and writing them to user_student.txt file
+        with open("user_student.txt", "w", encoding='utf-8') as studWriter:
+            for iter in range(len(stud_id_list)):
+                studWriter.writelines(stud_id_list[iter] + ";;;"
+                                        + un_list[iter] + ";;;"
+                                        + pw_list[iter] + ";;;"
+                                        + title_list[iter] + ";;;"
+                                        + image_list[iter] + ";;;"
+                                        + inits_list[iter] + ";;;"
+                                        + review_list[iter])
         return None
 
     def extract_instructor_info(self):
@@ -318,5 +397,5 @@ a = Admin()
 # a.register_admin()
 # a.extract_course_info()
 # a.extract_review_info()
-# a.extract_students_info()
-a.extract_instructor_info()
+a.extract_students_info()
+# a.extract_instructor_info()

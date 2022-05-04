@@ -23,22 +23,22 @@ class User():
                # user_id = "443322"
          # Check if generated id is unique
          flag = 0
-         with open("user_admin.txt", "r") as filestreamone:
-            with open("user_instructor.txt", "r") as filestreamtwo:
-               with open("user_student.txt", "r") as filestreamthree:
-                  for line in filestreamone:
+         with open("user_admin.txt", "r", encoding="utf-8") as adminFile:
+            with open("user_instructor.txt", "r", encoding="utf-8") as itrFile:
+               with open("user_student.txt", "r", encoding="utf-8") as studFile:
+                  for line in adminFile:
                      line_id = line.split(";;;")[0]
                      if user_id == line_id: # not unique, stop 
                         flag = 1
                         break
                   if flag == 0:
-                     for line in filestreamtwo:
+                     for line in itrFile:
                         line_id = line.split(";;;")[0]
                         if user_id == line_id: # not unique, stop 
                            flag = 1
                            break
                   if flag == 0:
-                     for line in filestreamthree:
+                     for line in studFile:
                         line_id = line.split(";;;")[0]
                         if user_id == line_id: # not unique, stop 
                            flag = 1
