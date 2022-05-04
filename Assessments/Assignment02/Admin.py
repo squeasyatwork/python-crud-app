@@ -392,10 +392,71 @@ class Admin(User):
                                                     + str(itr_dict[item]) 
                                                     + "\n")
         return None
+    
+    def extract_info(self):
+        self.extract_course_info()
+        self.extract_instructor_info()
+        self.extract_students_info()
+        self.extract_review_info()
+        return None
+    
+    def remove_data(self):
+        with open('/result/course.txt', 'w', encoding='utf-8') as deleter:
+            deleter.write("")
+        with open('/result/review.txt', 'w', encoding='utf-8') as deleter:
+            deleter.write("")
+        with open('user_student.txt', 'w', encoding='utf-8') as deleter:
+            deleter.write("")
+        with open('user_instructor.txt', 'w', encoding='utf-8') as deleter:
+            deleter.write("")
+        return None
+
+    def view_courses(self, args=[]):
+        return None
+    
+    def view_users(self):
+        print("ADMINS:", end=" ")
+        with open('user_admin.txt', 'r', encoding='utf-8') as adminReader:
+            admincount = 0
+            for line in adminReader:
+                # admin_entry = line.split(";;;")
+                # print("ID: ", admin_entry[0], end="\n\t")
+                # print("Username: ", admin_entry[1], end="\n\t")
+                # print("Passwo")
+                admincount += 1
+            print(admincount, end="\n\n")
+        print("INSTRUCTORS:", end=" ")
+        with open('user_instructor.txt', 'r', encoding='utf-8') as itrReader:
+            itrcount = 0
+            for line in itrReader:
+                # admin_entry = line.split(";;;")
+                # print("ID: ", admin_entry[0], end="\n\t")
+                # print("Username: ", admin_entry[1], end="\n\t")
+                # print("Passwo")
+                itrcount += 1
+            print(itrcount, end="\n\n")
+        print("STUDENTS:", end=" ")
+        with open('user_student.txt', 'r', encoding='utf-8') as studReader:
+            studcount = 0
+            for line in studReader:
+                # admin_entry = line.split(";;;")
+                # print("ID: ", admin_entry[0], end="\n\t")
+                # print("Username: ", admin_entry[1], end="\n\t")
+                # print("Passwo")
+                studcount += 1
+            print(studcount, end="\n\n")
+        return None
+
+    def view_reviews(self, args=[]):
+        return None
+    
+    def __str__(self):
+        return super().__str__()
 
 a = Admin()
 # a.register_admin()
 # a.extract_course_info()
 # a.extract_review_info()
-a.extract_students_info()
+# a.extract_students_info()
 # a.extract_instructor_info()
+a.view_users()

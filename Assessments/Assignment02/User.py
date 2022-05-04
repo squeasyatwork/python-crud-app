@@ -8,6 +8,7 @@ class User():
       self.id = id
       self.username = username
       self.password = password
+      # self.login_user_info = ''
    
    def generate_user_id(self):
       """
@@ -48,20 +49,20 @@ class User():
                         break
       return user_id
    
-   def encryption(self, input_str):
+   def encryption(self, input_password):
     all_punctuation = """!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
     # your answer
     # Obtaining the three encoding characters
-    first_character = all_punctuation[len(input_str) % len(all_punctuation)]
-    second_character = all_punctuation[len(input_str) % 5]
-    third_character = all_punctuation[len(input_str) % 10]
+    first_character = all_punctuation[len(input_password) % len(all_punctuation)]
+    second_character = all_punctuation[len(input_password) % 5]
+    third_character = all_punctuation[len(input_password) % 10]
     # making a list of these three characters for use below
     encodingList = [first_character, second_character, third_character]
     # print(second_character)
     # Building the encrypted password
     i = 1
     output_str = ""
-    for j in input_str:
+    for j in input_password:
         """Multiple the code character by its index i and 
         append this string before and after the password 
         character "j"
@@ -76,4 +77,87 @@ class User():
     output_str = "^^^" + output_str + "$$$"
     # print(output_str)
     return output_str
+   
+   def login(self):
+      un = input("Enter username: ")
+      pw = input("Enter password: ")
+      login_result = False
+      login_user_role = ''
+      login_user_info = ''
 
+      with open("user_admin.txt", "r", encoding="utf-8") as adminFile:
+         with open("user_instructor.txt", "r", encoding="utf-8") as itrFile:
+            with open("user_student.txt", "r", encoding="utf-8") as studFile:
+               for line in adminFile:
+                  entry = line.split(";;;")
+                  if(un == entry[1] and self.encryption(pw) == entry[2]):
+                     self.id = entry[0]
+                     self.username = entry[1]
+                     self.password = pw
+                     login_result = True
+                     login_user_role = 'Admin'
+                     login_user_info = str(self.id) + ";;;" \
+                                          + str(self.username) + ";;;"\
+                                          + str(self.password) + ";;;"\
+                                          + str(login_user_role)
+                     break
+               if not login_result:
+                  for line in itrFile:
+                     entry = line.split(";;;")
+                     if(un == entry[1] and self.encryption(pw) == entry[2]):
+                        self.id = entry[0]
+                        self.username = entry[1]
+                        self.password = pw
+                        login_result = True
+                        login_user_role = 'Instructor'
+                        login_user_info = str(self.id) + ";;;" \
+                                             + str(self.username) + ";;;"\
+                                             + str(self.password) + ";;;"\
+                                             + str(login_user_role)
+                        break
+               if not login_result:
+                  for line in studFile:
+                     entry = line.split(";;;")
+                     if(un == entry[1] and self.encryption(pw) == entry[2]):
+                        self.id = entry[0]
+                        self.username = entry[1]
+                        self.password = pw
+                        login_result = True
+                        login_user_role = 'Student'
+                        login_user_info = str(self.id) + ";;;" \
+                                             + str(self.username) + ";;;"\
+                                             + str(self.password) + ";;;"\
+                                             + str(login_user_role)
+                        break
+      if not login_result:
+         login_user_role = 'INVALID'
+         login_user_info = "USER_NOT_FOUND"
+      return (login_result, login_user_role, login_user_info)
+      
+   def extract_info(self):
+      print("You have no permission to extract information.")
+      return None
+   
+   def view_courses(self, args=[]):
+      print("You have no permission to view courses.")
+      return None
+   
+   def view_users(self):
+      print("You have no permission to view users.")
+      return None
+   
+   def view_reviews(self, args=[]):
+      print("You have no permission to view reviews.")
+      return None
+   
+   def remove_data(self):
+      print("You have no permission to remove data.")
+      return None
+
+   def __str__(self):
+      return (str(self.id) + ";;;" + str(self.username)\
+                  + ";;;" + str(self.password))
+
+a = User()
+a.login()
+# print(a.__str__())
