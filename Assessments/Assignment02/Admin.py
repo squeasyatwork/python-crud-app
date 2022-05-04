@@ -295,7 +295,7 @@ class Admin(User):
                                         + title_list[iter] + ";;;"
                                         + image_list[iter] + ";;;"
                                         + inits_list[iter] + ";;;"
-                                        + review_list[iter])
+                                        + review_list[iter] + "\n")
         return None
 
     def extract_instructor_info(self):
