@@ -11,9 +11,9 @@ class Course:
 
     def find_course_by_title_keyword(self, keyword):
         result_list = []
-        with open('data/result/course.txt', 'r', encoding='utf-8') as coursereader:
-            for line in coursereader:
-                if line.split(';;;')[1] == keyword:
+        with open('data/result/course.txt', 'r', encoding='utf-8') as courseReader:
+            for line in courseReader:
+                if keyword in line.split(';;;')[1]:
                     result_list.append(Course(line.split(';;;')[0],
                                                 line.split(';;;')[1],
                                                 line.split(';;;')[2],
@@ -25,8 +25,8 @@ class Course:
     
     def find_course_by_id(self, course_id):
         course = None
-        with open('data/result/course.txt', 'r', encoding='utf-8') as coursereader:
-            for line in coursereader:
+        with open('data/result/course.txt', 'r', encoding='utf-8') as courseReader:
+            for line in courseReader:
                 if line.split(';;;')[0] == str(course_id):
                     course = Course(line.split(';;;')[0],
                                                 line.split(';;;')[1],
@@ -40,8 +40,8 @@ class Course:
     
     def find_course_by_instructor_id(self, instructor_id):
         result_list = []
-        with open('user_instructor.txt', 'r', encoding='utf-8') as itrreader:
-            for line in itrreader:
+        with open('user_instructor.txt', 'r', encoding='utf-8') as itrReader:
+            for line in itrReader:
                 if line.split(';;;')[0] == str(instructor_id):
                     id_list = line.split(';;;')[6].split('-')
                     # print(id_list)
@@ -51,11 +51,11 @@ class Course:
         return result_list
     
     def courses_overview(self):
-        coursecount = 0
+        courseCount = 0
         with open('data/result/course.txt', 'r', encoding='utf-8') as courseReader:
             for line in courseReader:
-                coursecount += 1
-        return (str(coursecount)) 
+                courseCount += 1
+        return (str(courseCount)) 
 
     def __str__(self):
         return (str(self.course_id) + ";;;" + self.course_title + ";;;" 
@@ -70,7 +70,7 @@ class Course:
 #             Framework for data binding and dynamic web content", 3.55, 22993, 2)
 
 # print("\n",c.__str__())
-# print("\n",c.find_course_by_title_keyword(c.course_title))
+# print("\n",c.find_course_by_title_keyword("HTML5"))
 # print("\n",c.find_course_by_id(c.course_id))
 # print("\n",c.find_course_by_instructor_id(61671222))
 # print("\n",c.courses_overview())
