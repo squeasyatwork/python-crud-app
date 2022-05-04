@@ -252,21 +252,66 @@ class Admin(User):
                             itr_id  = item.split(":")[1]
                         else:
                             flag = 0
-                if  flag == 1:
-                    itr_name = ''
+                if flag == 1:
+                    itr_val = ''
+                    for item in sorted_entry:
+                        if item.startswith('"display_name":'):
+                            itr_val += item.split(":")[1].strip('"').lower().replace(" ", "_") + ";;;"
+                    
+                    itr_val += self.encryption(itr_id) + ";;;"
 
                     for item in sorted_entry:
                         if item.startswith('"display_name":'):
-                            itr_name = item.split(":")[1]
-    
-                    itr_dict[itr_id] = itr_name
-            
-                            
+                            itr_val += item.split(":")[1].strip('"') +";;;"
+
+                    for item in sorted_entry:
+                        if item.startswith('"job_title":'):
+                            itr_val += item.split(":")[1].strip('"') +";;;"
+                    if sorted_entry[len(sorted_entry)-1].startswith("http"):
+                        itr_val += sorted_entry[len(sorted_entry)-1] + ";;;"
+                    
+                    itr_dict[itr_id] = itr_val 
+
                 itr_entry_list.append(sorted_entry)
             # print(match.groups())
-            print(itr_dict['1364522'])
+            # print(itr_entry_list[1000])
             # print(itr_id_list[1000:3000])
-            
+
+            # adding courses by checking if instructor already exists
+            with open("data/course_data/raw_data.txt", "r", encoding="utf-8") as courseFile:
+                course_pattern = re.compile(r's":"course","id":(\d*?),(.*?)\[((.*?)"id":(\d*?)[,\}](.*?))\]')
+                # itr_id_pattern = re.compile(r'tors":.*?"id":(\d*?),')
+                matches = course_pattern.finditer(courseFile.read())
+                i = 0
+                for match in matches:
+                    i += 1
+                    if i%10 == 0:
+                        print(match.groups()[0]) #course_id at pos 0
+                        # accessing each instructor who teaches this course
+                        each_itr = re.split(r"\{(.*?)\}" , match.groups()[2])
+                        for item in sorted(each_itr):
+                            if len(item) > 10:
+                                item_id = re.findall(r'"id":(\d*?)[,?]', item)
+                                # print("itr_id ",item_id,end="\t")
+                                # print(len(item_id))
+                                if len(item_id)>0 and item_id[0] in itr_dict:
+                                    # print(item_id[0]," MATCH WITH ", itr_dict[item_id[0]], end="\t")
+                                    if itr_dict[item_id[0]].endswith(';'):
+                                        itr_dict[item_id[0]] += match.groups()[0]
+                                    else:
+                                        # print(item_id[0])
+                                        itr_dict[item_id[0]] += "-" + match.groups()[0]
+                                        # print(itr_dict[item_id[0]])
+                        # print("\n")
+        #         # for i in itr_dict:
+        #         # print(itr_dict['6772884'])
+        #         # print(i)
+
+        with open("user_instructor.txt", "w", encoding="utf-8") as itrFileWriter:
+            for item in itr_dict:
+                itrFileWriter.writelines(str(item) + ";;;"
+                                                    + str(itr_dict[item]) 
+                                                    + "\n")
         return None
 
 a = Admin()
