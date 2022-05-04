@@ -297,9 +297,7 @@ class Admin(User):
                             itr_val += item.split(":")[1].strip('"') +";;;"
                     if sorted_entry[len(sorted_entry)-1].startswith("http"):
                         itr_val += sorted_entry[len(sorted_entry)-1] + ";;;"
-                    
                     itr_dict[itr_id] = itr_val 
-
                 itr_entry_list.append(sorted_entry)
             # print(match.groups())
             # print(itr_entry_list[1000])
