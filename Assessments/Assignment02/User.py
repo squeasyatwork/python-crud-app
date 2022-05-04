@@ -158,6 +158,4 @@ class User():
       return (str(self.id) + ";;;" + str(self.username)\
                   + ";;;" + str(self.password))
 
-a = User()
-a.login()
 # print(a.__str__())

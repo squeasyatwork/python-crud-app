@@ -41,15 +41,14 @@ class Admin(User):
                 course_title_list.append(match.groups('1')[0])
             # print(len(course_title_list))
             # print(course_title_list[0])
-            # image_pattern = re.compile(r'(https:\/\/img-c\.udemycdn\.com\/course\/100x100\/[\w_]+?\.jpg)')
             image_pattern  =re.compile(r'(.{13}\.udemycdn\.com\/course\/100(.*?))"')
             courseFile.seek(0, 0)
             matches = image_pattern.finditer(courseFile.read())
             image_list = []
             for match in matches:
                 image_list.append(match.groups('1')[0])
-            print(len(image_list))
-            print(image_list[:100])
+            # print(len(image_list))
+            # print(image_list[:100])
             headline_pattern = re.compile(r'","headline":"(.*?)","num')
             courseFile.seek(0, 0)
             matches = headline_pattern.finditer(courseFile.read())
@@ -89,9 +88,6 @@ class Admin(User):
                 else:
                     duration_list.append(match.groups('0')[0])
                 # print(len(match.groups('0')))
-                # print("g0-->", match.groups('0')[0], "\t", match.groups('0')[1])
-                # print("g1-->", match.groups('1')[0], "\t", match.groups('1')[1])
-                # print("g2-->", match.groups('2')[0], "\t", match.groups('2')[1])
             # print(len(match_list))
             # print(type(course_id_list[0]))
             # print(type(course_title_list[0]))
@@ -119,7 +115,6 @@ class Admin(User):
         content_list = []
         rating_list = []
         course_id_list = []
-        # print(content_list, rating_list, review_id_list, course_id_list)
         for jsonfile in os.listdir(os.getcwd()+"/data/review_data"):
             with open(os.path.join(os.getcwd()+"/data/review_data", jsonfile), 'r', encoding="utf-8") as reviewFile:
                 review_id_pattern = re.compile(r'w", "id": (\d+?),')
@@ -159,29 +154,14 @@ class Admin(User):
         image_list = []
         inits_list = []
         review_list = []
-        i = 0
         # First call extract_instructor_info() and generate user_instructor.txt
-        """
-        Now retrieve all the students who have an id in the json review strings       
-        and generate the user_student.txt file.
-        Now, retrieve all students wiithout an id in the json review strings
-        and generate unique student id's fore them.
-        """
-
         for jsonfile in os.listdir(os.getcwd()+"/data/review_data"):
             with open(os.path.join(os.getcwd()+"/data/review_data", jsonfile), 'r', encoding="utf-8") as reviewFile:
                 stud_id_pattern = re.compile(r'"user(.*?)", "user": {"_class": "user", ("id": (\d{0,10}), )?')
                 matches = stud_id_pattern.finditer(reviewFile.read())
                 for match in matches:
-                    # i += 1
                     # print(match.groups())
-                    # if(i>100):
-                    #     break
-                    # i+=1
-                    # if(not(match.groups()[2] is None)): # true if ID exists
-                        # print(match.groups()[2], end=" ")
                     stud_id_list.append(match.groups()[2])
-                        # i += 1
                 # generating usernames and adding to un_list, also building title_list in parallel
                 reviewFile.seek(0, 0)
                 title_pattern = re.compile(r'"user_modified"(.*?)"title": "(.+?)"')
@@ -191,25 +171,10 @@ class Admin(User):
                     un_list.append(match.groups()[1].lower().replace(" ", "_"))
                     # print(match.groups()[1])
                 reviewFile.seek(0, 0)
-                # pw_pattern = re.compile(r'"initials": "(.{0,10})"}, "response":')
-                # w_pattern = re.compile(r'"initials": "(.{0,10})"}, "response":')
+                # Start generating pw_list by extracting and storing the initials
                 pw_pattern = re.compile(r'"user_modified".*?"image_50x50":(.*?)"(, "initials": "(.{0,10})"\}|\}), "resp')
                 matches = pw_pattern.finditer(reviewFile.read())
-                i = 0
                 for match in matches:
-                    # # if (match.groups()[0] is None):
-                    # #     i += 1
-                    # # else:
-                    # #     pw_list.append(match.groups())
-                    # #     # print(match.groups()[1])
-                    # if len(match.groups())>=0:
-                    #     i += 1
-                    #     pw_list.append(match.groups()[len(match.groups())-1])
-                    #     # print(match.groups()[1])
-                    # pw_list.append(sorted(list(filter(None, match.groups()))))
-                    # i += 1
-                    # if i % 1000 == 0:
-                    #     print(match.groups(), end="\n\n")
                     pw_list.append(match.groups()[2])
                 # Obtaining user_image and storing it in image_list
                 reviewFile.seek(0, 0)
@@ -265,18 +230,6 @@ class Admin(User):
             pw_list[iter] = real_pw
             # if iter == 1000:
             #     print(pw_list[iter],end="\n\n")
-        
-        # for i,j in pw_list,stud_id_list:
-        #     i = i + j + i
-
-
-        # print(i)
-        # for i in stud_id_list:
-        #     if i is None:
-        #         print(i)
-        # for iter in range(len(stud_id_list)):
-        #     # pw_list[iter] = pw_list[iter]+stud_id_list[iter]+pw_list[iter]
-        #     print(pw_list[iter]+stud_id_list[iter]+pw_list[iter],end="\n\n")
         # print("id_list length: ",len(stud_id_list))
         # print("un_list length: ",len(un_list))
         # print("pw_list length: ",len(pw_list))
@@ -301,17 +254,13 @@ class Admin(User):
     def extract_instructor_info(self):
         with open("data/course_data/raw_data.txt", "r", encoding="utf-8") as courseFile:
             itr_pattern = re.compile(r'tors":\[{(.*?)("image_100x100":"(.*?)",|"display_name":"(.*?)",|"job_title":"(.*?)",|"id":(\d*?),)(.*?)("image_100x100":"(.*?)",|"display_name":"(.*?)",|"job_title":"(.*?)",|"id":(.*?),)(.*?)("image_100x100":"(.*?)",|"display_name":"(.*?)",|"job_title":"(.*?)",|"id":(.*?),)(.*?)("image_100x100":"(.*?)"|"display_name":"(.*?)"|"job_title":"(.*?)"|"id":(.*?))(.*?)}\]')
-            # itr_id_pattern = re.compile(r'tors":.*?"id":(\d*?),')
             matches = itr_pattern.finditer(courseFile.read())
             itr_entry_list = []
             itr_id_list = []
             itr_string = ''
             itr_dict = {}
-            # id displayname jobtitle image courses
-            i=0
             for match in matches:
                 flag = 0
-                i += 1
                 # if(i%100)==0:
                 #     # print( sorted(list(filter(None, list(match.groups())))) , end="\n\n" )
                 #     sorted_entry = sorted(list(filter(None, list(match.groups()))))
@@ -359,38 +308,34 @@ class Admin(User):
             # adding courses by checking if instructor already exists
             with open("data/course_data/raw_data.txt", "r", encoding="utf-8") as courseFile:
                 course_pattern = re.compile(r's":"course","id":(\d*?),(.*?)\[((.*?)"id":(\d*?)[,\}](.*?))\]')
-                # itr_id_pattern = re.compile(r'tors":.*?"id":(\d*?),')
                 matches = course_pattern.finditer(courseFile.read())
                 i = 0
                 for match in matches:
-                    i += 1
-                    if i%10 == 0:
-                        print(match.groups()[0]) #course_id at pos 0
-                        # accessing each instructor who teaches this course
-                        each_itr = re.split(r"\{(.*?)\}" , match.groups()[2])
-                        for item in sorted(each_itr):
-                            if len(item) > 10:
-                                item_id = re.findall(r'"id":(\d*?)[,?]', item)
-                                # print("itr_id ",item_id,end="\t")
-                                # print(len(item_id))
-                                if len(item_id)>0 and item_id[0] in itr_dict:
-                                    # print(item_id[0]," MATCH WITH ", itr_dict[item_id[0]], end="\t")
-                                    if itr_dict[item_id[0]].endswith(';'):
-                                        itr_dict[item_id[0]] += match.groups()[0]
-                                    else:
-                                        # print(item_id[0])
-                                        itr_dict[item_id[0]] += "-" + match.groups()[0]
-                                        # print(itr_dict[item_id[0]])
-                        # print("\n")
+                    # if i%10 == 0:
+                    #     print(match.groups()[0]) #course_id at pos 0
+                    # accessing each instructor who teaches this course
+                    each_itr = re.split(r"\{(.*?)\}" , match.groups()[2])
+                    for item in sorted(each_itr):
+                        if len(item) > 10:
+                            item_id = re.findall(r'"id":(\d*?)[,?]', item)
+                            # print("itr_id ",item_id,end="\t")
+                            # print(len(item_id))
+                            if len(item_id)>0 and item_id[0] in itr_dict:
+                                # print(item_id[0]," MATCH WITH ", itr_dict[item_id[0]], end="\t")
+                                if itr_dict[item_id[0]].endswith(';'):
+                                    itr_dict[item_id[0]] += match.groups()[0]
+                                else:
+                                    # print(item_id[0])
+                                    itr_dict[item_id[0]] += "-" + match.groups()[0]
+                                    # print(itr_dict[item_id[0]])
         #         # for i in itr_dict:
-        #         # print(itr_dict['6772884'])
-        #         # print(i)
+                     # print(i)
 
         with open("user_instructor.txt", "w", encoding="utf-8") as itrFileWriter:
             for item in itr_dict:
                 itrFileWriter.writelines(str(item) + ";;;"
-                                                    + str(itr_dict[item]) 
-                                                    + "\n")
+                                            + str(itr_dict[item]) 
+                                            + "\n")
         return None
     
     def extract_info(self):
@@ -442,7 +387,6 @@ class Admin(User):
                 # admin_entry = line.split(";;;")
                 # print("ID: ", admin_entry[0], end="\n\t")
                 # print("Username: ", admin_entry[1], end="\n\t")
-                # print("Passwo")
                 studcount += 1
             print(studcount, end="\n\n")
         return None
@@ -459,4 +403,9 @@ a = Admin()
 # a.extract_review_info()
 # a.extract_students_info()
 # a.extract_instructor_info()
-a.view_users()
+# a.extract_info()
+# # a.remove_data() TRY TO TEST THIS ONLY AT THE LAST TESTING STAGE!
+# a.view_courses()
+# a.view_users()
+# a.view_reviews()
+# print(a.__str__())
