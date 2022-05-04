@@ -1,8 +1,8 @@
 from User import User
 
 class Instructor(User):
-    def __init__(self, id="-1", un="", pw="", dname="", job="",
-                    img100="", cidlist=[]):
+    def __init__(self, id = -1, un = "", pw = "", dname = "", job = "",
+                    img100 = "", cidlist = []):
         super().__init__(id, un, pw)
         self.display_name = dname
         self.job_title = job
@@ -24,9 +24,10 @@ class Instructor(User):
             else:
                 courses_string += '-' + str(item)
         return (user_string + ";;;" + self.display_name + ";;;" 
-                    + self.job_title + self.image_100x100 + ";;;" 
+                    + self.job_title + ";;;" + self.image_100x100 + ";;;" 
                     + courses_string)
 
 # i = Instructor('123', 'user1', 'pass1', 'Rajesh', 'Engineer', 'https://url',
 #                     [1111, 2222, 3333, 0000])
+
 # print(i.__str__())
