@@ -1,4 +1,6 @@
 from User import User
+from Course import Course
+from Review import Review
 
 class Instructor(User):
     def __init__(self, id = -1, un = "", pw = "", dname = "", job = "",
@@ -20,9 +22,28 @@ class Instructor(User):
                     break
     
     def view_courses(self, args=[]):
+        print()
+        coursesList = Course().find_course_by_instructor_id(self.id)
+        iter = 0
+        while iter < min(len(coursesList), 10):
+            print (iter+1, ":", coursesList[iter].course_title)
+            iter += 1
         return None
     
     def view_reviews(self, args=[]):
+        print()
+        coursesList = Course().find_course_by_instructor_id(self.id)
+        iter1 = 0
+        for iter1 in range(len(coursesList)):
+            print (coursesList[iter1].course_title, ":", end = "\n\t")
+            reviewsList = Review().find_review_by_course_id\
+                                        (coursesList[iter1].course_id)
+            iter2 = 0
+            while iter2 < min(len(reviewsList), 10):
+                print (iter2+1, ":", 
+                        reviewsList[iter2].content, end = "\n\t")
+                iter2 += 1
+            iter1 += 1
         return None
     
     def __str__(self):

@@ -20,6 +20,7 @@ class Student(User):
                     break
     
     def view_courses(self, args=[]):
+        print()
         with open('data/result/review.txt', 'r', encoding='utf-8') as revreader:
             for line in revreader:
                 if line.split(';;;')[0] == str(self.review_id):
@@ -28,6 +29,7 @@ class Student(User):
         return None
     
     def view_reviews(self, args=[]):
+        print()
         with open('data/result/review.txt', 'r', encoding='utf-8') as revreader:
             for line in revreader:
                 if line.split(';;;')[0].strip() == str(self.review_id):

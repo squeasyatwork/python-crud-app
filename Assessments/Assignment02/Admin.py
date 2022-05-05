@@ -1,4 +1,5 @@
 from User import User
+from Instructor import Instructor
 from Course import Course
 from Review import Review
 import re
@@ -357,50 +358,77 @@ class Admin(User):
         return None
 
     def view_courses(self, args=[]):
-        courseObj = None
+        print()
         if len(args) == 0:
-            print(Course().courses_overview(), end="\n\n")
+            print(Course().courses_overview())
         elif len(args) == 2:
-            if args[0] is None:
-                print("INVALID INPUT VALUE TO SEARCH-BY: Enter",end=" ")
+            if args[0] == 'TITLE_KEYWORD':
+                for course in Course().\
+                                find_course_by_title_keyword(args[1]):
+                    print(course.course_title)
+            elif args[0] == 'ID':
+                if args[1].isdigit():
+                    print(Course().find_course_by_id(args[1]).course_title)
+                else:
+                    print("Course ID can be numeric only!")
+            elif args[0] == 'INSTRUCTOR_ID':
+                if args[1].isdigit():
+                    coursesList = Course().find_course_by_instructor_id(args[1])
+                    for course in coursesList:
+                        print(course.course_title)
+                else:
+                    print("Instructor ID can be numeric only!")
+            else:
+                print("\nINVALID INPUT VALUE TO SEARCH-BY: Enter",end=" ")
                 print("one of the following: TITLE_KEYWORD/ID/INSTRUCTOR_ID")
-            elif args[1] is None:
-                print("INVALID")
         return None
     
     def view_users(self):
+        print()
         print("ADMINS:", end=" ")
         with open('user_admin.txt', 'r', encoding='utf-8') as adminReader:
             admincount = 0
             for line in adminReader:
-                # admin_entry = line.split(";;;")
-                # print("ID: ", admin_entry[0], end="\n\t")
-                # print("Username: ", admin_entry[1], end="\n\t")
-                # print("Passwo")
                 admincount += 1
             print(admincount, end="\n\n")
         print("INSTRUCTORS:", end=" ")
         with open('user_instructor.txt', 'r', encoding='utf-8') as itrReader:
             itrcount = 0
             for line in itrReader:
-                # admin_entry = line.split(";;;")
-                # print("ID: ", admin_entry[0], end="\n\t")
-                # print("Username: ", admin_entry[1], end="\n\t")
-                # print("Passwo")
                 itrcount += 1
             print(itrcount, end="\n\n")
         print("STUDENTS:", end=" ")
         with open('user_student.txt', 'r', encoding='utf-8') as studReader:
             studcount = 0
             for line in studReader:
-                # admin_entry = line.split(";;;")
-                # print("ID: ", admin_entry[0], end="\n\t")
-                # print("Username: ", admin_entry[1], end="\n\t")
                 studcount += 1
             print(studcount, end="\n\n")
         return None
 
     def view_reviews(self, args=[]):
+        print()
+        if len(args) == 0:
+            print(Review().reviews_overview())
+        elif len(args) == 2:
+            if args[0] == 'ID':
+                if args[1].isdigit():
+                    print(Review().find_review_by_id(args[1]).content)
+                else:
+                    print("Review ID can be numeric only!")
+            elif args[0] == 'KEYWORD':
+                for review in Review().\
+                                find_review_by_keywords(args[1]):
+                    print(review.content)
+            elif args[0] == 'COURSE_ID':
+                if args[1].isdigit():
+                    reviewsList = Review().find_review_by_course_id(args[1])
+                    for review in reviewsList:
+                        print(review.content)
+                else:
+                    print("Course ID can be numeric only!")
+            else:
+                print("\nINVALID INPUT VALUE TO SEARCH-BY: Enter",end=" ")
+                print("one of the following: ID/KEYWORD/COURSE_ID")
         return None
     
     def __str__(self):
