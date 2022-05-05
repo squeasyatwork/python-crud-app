@@ -1,13 +1,43 @@
+"""
+This is the main file where the entire program runs.
+It controls the flow of direct interaction with the user through the
+terminal. It consists of functions for each of the following tasks:
+    1. A starting code block that initalises and registers an Admin user who can extract and compile
+        data about an education system that consists of several courses 
+        taught by various instructors, and have several students that 
+        enrol in it and give a review on the courses. 
+    2. A main function to drive the program by calling various methods that perform actions such as authenticating and logging in users,
+        showing them a list of actions, or asking them for an action to perform such as extract/view/remove data
+        about courses/reviews/students/instructors. It also asks if the users want to exit the program.
+    3. A menu function to display the actions that users may want to perform.
+    4. A function that asks users what action they wish to perform, decides the validity of the requested action, and makes calls to various methods 
+        across different classes to achieve the requested action.
+Once the file reaches completion of execution, the entire program is complete.
+"""
+
+# Importing various class files that are used in the file
 from User import User
 from Admin import Admin
 from Instructor import Instructor
 from Student import Student
 
+"""
+This function displays the role of the logged in user, along with a complete list of actions that the system can perform for them.\
+It accepts exactly 1 parameter:
+    1. The role of the logged in user
+"""
 def show_menu(role):
     print("\nPlease enter", role, "command for further service:")
     print("1. EXTRACT_DATA\n2. VIEW_COURSES\n3. VIEW_USERS")
     print("4. VIEW_REVIEWS\n5. REMOVE_DATA")
     return None
+
+"""
+This function asks the user what action they wish to perform.
+It makes various validation checks on the input it accepts from users as listed below:
+    1. It stores all pa input 
+It returns an integer value denoting
+"""
 def process_operations(user_object):
     flag = 0
     # flag = int(input("(PROCESSOR) Enter flag value: "))
@@ -129,7 +159,6 @@ def main():
             print("Username can have letters and _'s only,", end = "\n\t")
             print("password cannot have spaces.")
     return None
-
 
 if __name__ == "__main__":
     # print a welcome message
