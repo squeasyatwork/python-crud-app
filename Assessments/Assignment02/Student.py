@@ -8,6 +8,16 @@ class Student(User):
         self.image_50x50 = img50
         self.user_initials = inits
         self.review_id = rev_id
+        with open("user_student.txt", "r", encoding="utf-8") as studFile:
+            for line in studFile:
+                entry = line.split(";;;")
+                if (entry[1] == un and entry[2] == self.encryption(pw)):
+                    self.id = entry[0]
+                    self.user_title = entry[3]
+                    self.image_50x50 = entry[4]
+                    self.user_initials = entry[5]
+                    self.review_id = entry[6].strip()
+                    break
     
     def view_courses(self, args=[]):
         with open('data/result/review.txt', 'r', encoding='utf-8') as revreader:
@@ -20,7 +30,7 @@ class Student(User):
     def view_reviews(self, args=[]):
         with open('data/result/review.txt', 'r', encoding='utf-8') as revreader:
             for line in revreader:
-                if line.split(';;;')[0] == str(self.review_id):
+                if line.split(';;;')[0].strip() == str(self.review_id):
                     print(line.split(';;;')[1])
                     break
         return None

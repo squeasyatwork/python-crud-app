@@ -25,8 +25,10 @@ class User():
          # Check if generated id is unique
          flag = 0
          with open("user_admin.txt", "r", encoding="utf-8") as adminFile:
-            with open("user_instructor.txt", "r", encoding="utf-8") as itrFile:
-               with open("user_student.txt", "r", encoding="utf-8") as studFile:
+            with open("user_instructor.txt", "a+", encoding="utf-8") as itrFile:
+               with open("user_student.txt", "a+", encoding="utf-8") as studFile:
+                  itrFile.seek(0, 0)
+                  studFile.seek(0, 0)
                   for line in adminFile:
                      line_id = line.split(";;;")[0]
                      if user_id == line_id: # not unique, stop 
@@ -79,55 +81,43 @@ class User():
     return output_str
    
    def login(self):
-      un = input("Enter username: ")
-      pw = input("Enter password: ")
       login_result = False
       login_user_role = ''
-      login_user_info = ''
-
-      with open("user_admin.txt", "r", encoding="utf-8") as adminFile:
-         with open("user_instructor.txt", "r", encoding="utf-8") as itrFile:
-            with open("user_student.txt", "r", encoding="utf-8") as studFile:
+      login_user_info = []
+      with open("user_admin.txt", "a+", encoding="utf-8") as adminFile:
+         with open("user_instructor.txt", "a+", encoding="utf-8") as itrFile:
+            with open("user_student.txt", "a+", encoding="utf-8") as studFile:
+               adminFile.seek(0, 0)
+               studFile.seek(0, 0)
+               itrFile.seek(0, 0)
                for line in adminFile:
                   entry = line.split(";;;")
-                  if(un == entry[1] and self.encryption(pw) == entry[2]):
+                  if(self.username == entry[1] and self.encryption(self.password) == entry[2].strip("\n")):
                      self.id = entry[0]
-                     self.username = entry[1]
-                     self.password = pw
                      login_result = True
                      login_user_role = 'Admin'
-                     login_user_info = str(self.id) + ";;;" \
-                                          + str(self.username) + ";;;"\
-                                          + str(self.password) + ";;;"\
-                                          + str(login_user_role)
-                     break
+                     login_user_info = [str(self.id), str(self.username), 
+                                             str(self.password), str(login_user_role)]
+                     break                      
                if not login_result:
                   for line in itrFile:
                      entry = line.split(";;;")
-                     if(un == entry[1] and self.encryption(pw) == entry[2]):
+                     if(self.username == entry[1] and self.encryption(self.password) == entry[2].strip("\n")):
                         self.id = entry[0]
-                        self.username = entry[1]
-                        self.password = pw
                         login_result = True
                         login_user_role = 'Instructor'
-                        login_user_info = str(self.id) + ";;;" \
-                                             + str(self.username) + ";;;"\
-                                             + str(self.password) + ";;;"\
-                                             + str(login_user_role)
+                        login_user_info = [str(self.id), str(self.username), 
+                                                str(self.password), str(login_user_role)]
                         break
                if not login_result:
                   for line in studFile:
                      entry = line.split(";;;")
-                     if(un == entry[1] and self.encryption(pw) == entry[2]):
+                     if(self.username == entry[1] and self.encryption(self.password) == entry[2].strip("\n")):
                         self.id = entry[0]
-                        self.username = entry[1]
-                        self.password = pw
                         login_result = True
                         login_user_role = 'Student'
-                        login_user_info = str(self.id) + ";;;" \
-                                             + str(self.username) + ";;;"\
-                                             + str(self.password) + ";;;"\
-                                             + str(login_user_role)
+                        login_user_info = [str(self.id), str(self.username), 
+                                                str(self.password), str(login_user_role)]
                         break
       if not login_result:
          login_user_role = 'INVALID'

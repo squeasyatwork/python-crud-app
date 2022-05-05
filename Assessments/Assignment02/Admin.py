@@ -1,4 +1,6 @@
 from User import User
+from Course import Course
+from Review import Review
 import re
 import os
 
@@ -7,21 +9,21 @@ class Admin(User):
         User.__init__(self, id, username, password)
 
     def register_admin(self):
-        username = input("Enter username:")
         flag = 0
-        with open("user_admin.txt", "r+") as adminFile:
+        with open("user_admin.txt", "w+") as adminFile:
             pattern = re.compile(r';((\w)+);')
             matches = pattern.finditer(adminFile.read())
             for match in matches:
-                if(match.groups('1')[0] == username):
+                if(match.groups()[0] == self.username):
                     flag = 1
                     # print("Match found in the line: ", match.__str__())
             if flag == 0:
                 # print("Match NOT found")
-                adminId = input("Enter ID: ")
-                pw = input("Enter password: ")
-                adminFile.seek(0, 2)
-                adminFile.write(adminId+";;;"+username+";;;"+self.encryption(pw))
+                # adminId = input("Enter ID: ")
+                # pw = input("Enter password: ")
+                # adminFile.seek(0, 2)             
+                adminFile.write(str(self.id) + ";;;" + self.username 
+                                    + ";;;" + self.encryption(self.password) + "\n")
         return None
     
     def extract_course_info(self):
@@ -338,23 +340,32 @@ class Admin(User):
     
     def extract_info(self):
         self.extract_course_info()
-        self.extract_instructor_info()
         self.extract_students_info()
         self.extract_review_info()
+        self.extract_instructor_info()
         return None
     
     def remove_data(self):
-        with open('/result/course.txt', 'w', encoding='utf-8') as deleter:
-            deleter.write("")
-        with open('/result/review.txt', 'w', encoding='utf-8') as deleter:
-            deleter.write("")
+        with open('data/result/course.txt', 'w', encoding='utf-8') as deleter:
+            pass
+        with open('data/result/review.txt', 'w', encoding='utf-8') as deleter:
+            pass
         with open('user_student.txt', 'w', encoding='utf-8') as deleter:
-            deleter.write("")
+            pass
         with open('user_instructor.txt', 'w', encoding='utf-8') as deleter:
-            deleter.write("")
+            pass
         return None
 
     def view_courses(self, args=[]):
+        courseObj = None
+        if len(args) == 0:
+            print(Course().courses_overview(), end="\n\n")
+        elif len(args) == 2:
+            if args[0] is None:
+                print("INVALID INPUT VALUE TO SEARCH-BY: Enter",end=" ")
+                print("one of the following: TITLE_KEYWORD/ID/INSTRUCTOR_ID")
+            elif args[1] is None:
+                print("INVALID")
         return None
     
     def view_users(self):
@@ -395,7 +406,7 @@ class Admin(User):
     def __str__(self):
         return super().__str__()
 
-a = Admin()
+# a = Admin()
 # a.register_admin()
 # a.extract_course_info()
 # a.extract_review_info()
@@ -407,3 +418,5 @@ a = Admin()
 # a.view_users()
 # a.view_reviews()
 # print(a.__str__())
+# a = Admin(999, "admin", "admin")
+# a.register_admin()

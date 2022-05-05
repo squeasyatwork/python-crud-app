@@ -8,6 +8,16 @@ class Instructor(User):
         self.job_title = job
         self.image_100x100 = img100
         self.course_id_list = cidlist
+        with open("user_instructor.txt", "r", encoding="utf-8") as itrFile:
+            for line in itrFile:
+                entry = line.split(";;;")
+                if (entry[1] == un and entry[2] == self.encryption(pw)):
+                    self.id = entry[0]
+                    self.display_name = entry[3]
+                    self.job_title = entry[4]
+                    self.image_100x100 = entry[5]
+                    self.course_id_list = entry[6].strip("\n").split("-")
+                    break
     
     def view_courses(self, args=[]):
         return None
