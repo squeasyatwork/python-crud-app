@@ -6,28 +6,68 @@ import re
 import os
 
 class Admin(User):
+    """
+    This class represents an admin user. The admin has all permissions 
+    including extract_info, view_users, and remove_data.
+    It has the exact same fields as the parent class.
+    It has the following methods:
+        1. Register admin to register a new admin user.
+        2. Extract course info, to extract information about courses from 
+            raw_data.txt file and store it in course.txt file
+        3. Extract review info, to extract information about reviews from 
+            raw_data.txt file and store it in review.txt file
+        4. Extract student info, to extract information about students from 
+            review_data .json files and store it in user_student.txt file
+        5. Extract instructor info, to extract information about 
+            instructors from review_data .json files and store it in 
+            user_instructor.txt file
+        6. Extract info, that calls all four extract methods above.
+        7. Remove data, to delete all the extracted data
+        8. View courses, that shows the total number of courses, or
+            a specific list of course/s that match a provided criterion
+        9. View users, that shows the number of users of each type
+        10. View reviews, that shows the total number of reviews, or
+            a specific list of review/s that match a provided criterion
+    """
+
+    # Constructor
     def __init__(self, id = -1, username = "", password = ""):
         User.__init__(self, id, username, password)
 
     def register_admin(self):
+        """
+        This method first checks if the current admin object has its 
+            credentials stored in the user_admin.txt file.
+        If it is stored, it does nothing.
+        Otherwise, it generates a unique user ID for the new admin and
+            writes the new user credentials to the file.
+        """
         flag = 0
+        # Open the admins file to search for current admin object
         with open("user_admin.txt", "w+") as adminFile:
+            # Define a regex pattern to obtain all admin entries
             pattern = re.compile(r';((\w)+);')
             matches = pattern.finditer(adminFile.read())
-            for match in matches:
-                if(match.groups()[0] == self.username):
+            for match in matches:   # Compare each admin entry
+                if(match.groups()[0] == self.username):   # Match found
                     flag = 1
+                    break
                     # print("Match found in the line: ", match.__str__())
-            if flag == 0:
-                # print("Match NOT found")
-                # adminId = input("Enter ID: ")
-                # pw = input("Enter password: ")
-                # adminFile.seek(0, 2)             
-                adminFile.write(str(self.id) + ";;;" + self.username 
+            if flag == 0:   # Match not found
+                #  Generate new ID and register the admin
+                adminFile.write(self.generate_user_id() + ";;;" + self.username 
                                     + ";;;" + self.encryption(self.password) + "\n")
         return None
     
     def extract_course_info(self):
+        """
+        This method extracts information of all courses from the raw_data.txt file,
+            and stores each course in a separate line in course.txt file.
+        It uses a separate regex to capture the fields of information about each 
+            course in separate lists, and then appends all these by indices 
+            while writing to the course.txt file.
+        A similar aproach is used in all extraction methods.
+        """
         with open("data/course_data/raw_data.txt", "r", encoding="utf-8") as courseFile:
             course_id_pattern = re.compile(r'"course","id":(\d+),')
             matches = course_id_pattern.finditer(courseFile.read())
@@ -249,7 +289,7 @@ class Admin(User):
                                         + un_list[iter] + ";;;"
                                         + pw_list[iter] + ";;;"
                                         + title_list[iter] + ";;;"
-                                        + image_list[iter] + ";;;"
+                                        + image_list[iter].strip() + ";;;"
                                         + inits_list[iter] + ";;;"
                                         + review_list[iter] + "\n")
         return None
@@ -340,6 +380,9 @@ class Admin(User):
         return None
     
     def extract_info(self):
+        """
+        This method simply calls all the four extract methods defined above.
+        """
         self.extract_course_info()
         self.extract_students_info()
         self.extract_review_info()
@@ -347,6 +390,10 @@ class Admin(User):
         return None
     
     def remove_data(self):
+        """
+        This method opens all files in write mode and truncates all their 
+            contents, if any.
+        """
         with open('data/result/course.txt', 'w', encoding='utf-8') as deleter:
             pass
         with open('data/result/review.txt', 'w', encoding='utf-8') as deleter:
@@ -358,61 +405,102 @@ class Admin(User):
         return None
 
     def view_courses(self, args=[]):
+        """
+        This method takes an optional argument, which is a search parameter.
+        It progresses in the following way:
+            1. It checks the length of args argument 
+            2. If no list is passed, it displays the number of courses.
+            3. If a list is passed, it validates the elements of it.
+            4. If first element is not in ("ID", "TITLE_KEYWORD", 
+                "INSTRUCTOR_ID"), then it displays an appropriate incorrect 
+                input message.
+                Otherwise, it moves on to validate the second element.
+            6. If first element is "ID" or "INSTRUCTOR_ID", it can only be 
+                numeric otherwise it displays an appropriate incorrect 
+                input message.
+        """
         print()
-        if len(args) == 0:
+        if len(args) == 0:   # No args list passed
             print(Course().courses_overview())
-        elif len(args) == 2:
+        elif len(args) == 2:   # args list has been passed
             if args[0] == 'TITLE_KEYWORD':
                 for course in Course().\
                                 find_course_by_title_keyword(args[1]):
                     print(course.course_title)
             elif args[0] == 'ID':
-                if args[1].isdigit():
-                    print(Course().find_course_by_id(args[1]).course_title)
+                if args[1].isdigit():   #Check if ID is numeric
+                    if Course().find_course_by_id(args[1]) is not None:
+                        print(Course().find_course_by_id(args[1]).course_title)
+                    else:
+                        print("No course found.")
                 else:
                     print("Course ID can be numeric only!")
             elif args[0] == 'INSTRUCTOR_ID':
-                if args[1].isdigit():
+                if args[1].isdigit():   #Check if INSTRUCTOR_ID is numeric
                     coursesList = Course().find_course_by_instructor_id(args[1])
                     for course in coursesList:
                         print(course.course_title)
                 else:
                     print("Instructor ID can be numeric only!")
-            else:
+            else:   # first element of args list is invalid
                 print("\nINVALID INPUT VALUE TO SEARCH-BY: Enter",end=" ")
                 print("one of the following: TITLE_KEYWORD/ID/INSTRUCTOR_ID")
         return None
     
     def view_users(self):
+        """
+        This method displays the number of users of each type.
+        It simply opens each user file and counts the number of users in it.
+        At the end of each file, it display the number of users found.
+        """
         print()
+        # Open admin file and count number of admins
         print("ADMINS:", end=" ")
         with open('user_admin.txt', 'r', encoding='utf-8') as adminReader:
             admincount = 0
             for line in adminReader:
                 admincount += 1
-            print(admincount, end="\n\n")
+            print(admincount, end="\n")
+        # Open instructor file and count number of instructors
         print("INSTRUCTORS:", end=" ")
         with open('user_instructor.txt', 'r', encoding='utf-8') as itrReader:
             itrcount = 0
             for line in itrReader:
                 itrcount += 1
-            print(itrcount, end="\n\n")
+            print(itrcount, end="\n")
+        # Open student file and count number of students
         print("STUDENTS:", end=" ")
         with open('user_student.txt', 'r', encoding='utf-8') as studReader:
             studcount = 0
             for line in studReader:
                 studcount += 1
-            print(studcount, end="\n\n")
+            print(studcount, end="\n")
         return None
 
     def view_reviews(self, args=[]):
+        """
+        This method takes an optional argument, which is a search parameter.
+        It progresses in the following way:
+            1. It checks the length of args argument 
+            2. If no list is passed, it displays the number of reviews.
+            3. If a list is passed, it validates the elements of it.
+            4. If first element is not in ("ID", "KEYWORD", "COURSE_ID"),
+                then it displays an appropriate incorrect input message.
+                Otherwise, it moves on to validate the second element.
+            6. If first element is "ID" or "COURSE_ID", it can only be 
+                numeric otherwise it displays an appropriate incorrect 
+                input message.
+        """
         print()
-        if len(args) == 0:
+        if len(args) == 0:   # No args list passed
             print(Review().reviews_overview())
-        elif len(args) == 2:
+        elif len(args) == 2:   # args list has been passed
             if args[0] == 'ID':
-                if args[1].isdigit():
-                    print(Review().find_review_by_id(args[1]).content)
+                if args[1].isdigit():   #Check if ID is numeric
+                    if Review().find_review_by_id(args[1]) is not None:
+                        print(Review().find_review_by_id(args[1]).content)
+                    else:
+                        print("Review not found.")
                 else:
                     print("Review ID can be numeric only!")
             elif args[0] == 'KEYWORD':
@@ -420,18 +508,21 @@ class Admin(User):
                                 find_review_by_keywords(args[1]):
                     print(review.content)
             elif args[0] == 'COURSE_ID':
-                if args[1].isdigit():
+                if args[1].isdigit():   #Check if COURSE_ID is numeric
                     reviewsList = Review().find_review_by_course_id(args[1])
                     for review in reviewsList:
                         print(review.content)
                 else:
                     print("Course ID can be numeric only!")
-            else:
+            else:   # first element of args list is invalid
                 print("\nINVALID INPUT VALUE TO SEARCH-BY: Enter",end=" ")
                 print("one of the following: ID/KEYWORD/COURSE_ID")
         return None
     
     def __str__(self):
+        """
+        Same as its parent class method definition.
+        """
         return super().__str__()
 
 # a = Admin()

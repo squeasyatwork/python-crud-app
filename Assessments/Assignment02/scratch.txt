@@ -1,5 +1,0 @@
-1234abcd;;;ausername1;;;apassword
-1234efgh;;;busername2;;;bpassword
-1234ijkl;;;cusername3;;;cpassword
-1234mnop;;;dusername4;;;dpassword
-1234qrst;;;fusername6;;;^^^+f+!!p!!!!!a!!!+s+!!s!!!!!w!!!+o+!!r!!!!!d!!!+6+$$$
