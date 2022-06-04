@@ -25,101 +25,77 @@ class Instructor(User):
                            self.email, self.display_name, self.job_title, "--".join(self.course_id_list)])
 
     def get_instructors(self):
-        # dirs_list = [x[2] for x in os.walk("../data/source_course_files")]
-        # # for a_file in dirs_list:
-        # #     with open(a_file, "r") as file_reader:
-        # #         print(file_reader.read(10))
-        # print(dirs_list)
+        """
+        START OF OLD WORKING CODE
+        # with open("data\\user.txt", "a+", encoding="utf-8", errors="ignore") as user_file:
+        #     # user_file.seek(0, 0)
+        #     instr_list = []
+        #     for dirpath, dirs, files in os.walk("data\\source_course_files"):
+        #         for filename in files:
+        #             fname = os.path.join(dirpath, filename)
+        #             with open(fname, "r", errors="ignore") as myfile:
+        #             #     print(myfile.read())
+        #                 values = json.load(myfile)
+        #                 for course in values["unitinfo"]["items"]:
+        #                     for instr in course["visible_instructors"]:
+        #                         user_file.seek(0, 0)
+        #                         for line in user_file:
+        #                             if line.split(";;;")[0] == str(instr["id"]):
+        #                                 instr_list.append(instr["id"])
+        #                                 break
+        #                         if instr["id"] not in instr_list:
+        #                             instr_list.append(instr["id"])
+        #                             curr_id = instr["id"]
+        #                             instr_course_list = []
+        #                             for dirpath2, dirs2, files2 in os.walk("data\\source_course_files"):
+        #                                 for filename2 in files2:
+        #                                     fname2 = os.path.join(dirpath2, filename2)
+        #                                     with open(fname2, "r", errors="ignore") as myfile2:
+        #                                         #     print(myfile2.read())
+        #                                         values2 = json.load(myfile2)
+        #                                         for course2 in values2["unitinfo"]["items"]:
+        #                                             for instr2 in course2["visible_instructors"]:
+        #                                                 if instr2["id"] == curr_id:
+        #                                                     instr_course_list.append(str(course2["id"]))
+        #                             username = instr["display_name"].lower().replace(" ", "_")
+        #                             user_file.write(";;;".join( [str(instr["id"]), username, self.encrypt_password(str(instr["id"])),
+        #                                             "yyyy-MM-dd_HH:mm:ss.SSS", "instructor", username+"@gmail.com",
+        #                                             instr["display_name"], instr["job_title"], "--".join(instr_course_list)] ) + "\n")
+        END OF OLD WORKING CODE
+        """
 
-        # for filename in os.listdir("..\\data\\source_course_files"):
-        #     os.chmod(os.path.join("..\\data\\source_course_files", filename), 666)
-        #     with open(os.path.join("..\\data\\source_course_files", filename), 'r') as f:
-        #         text = f.read()
-        #         print(text)
-        # cnt = 0
-        # for root, subdirs, files in os.walk("..\\data\\source_course_files"):
-        #     for subdir in subdirs:
-        #         for root, subdirs, files in os.walk(os.path.join(root, subdir)):
-        #             for subdir in subdirs:
-        #                 for a_file in os.listdir(os.path.join(root, subdir)):
-        #                     with open(os.path.join(root, subdir, a_file), "r") as file_reader:
-        #                         cnt += 1
-        #                         # print(file_reader.read())
-        with open("data\\user.txt", "a+", encoding="utf-8", errors="ignore") as user_file:
-            # user_file.seek(0, 0)
-            instr_list = []
-            for dirpath, dirs, files in os.walk("data\\source_course_files"):
-                for filename in files:
-                    fname = os.path.join(dirpath, filename)
-                    with open(fname, "r", errors="ignore") as myfile:
-                    #     print(myfile.read())
-                        values = json.load(myfile)
-                        for course in values["unitinfo"]["items"]:
-                            for instr in course["visible_instructors"]:
-                                user_file.seek(0, 0)
-                                for line in user_file:
-                                    if line.split(";;;")[0] == str(instr["id"]):
-                                        instr_list.append(instr["id"])
-                                        break
-                                if instr["id"] not in instr_list:
-                                    instr_list.append(instr["id"])
-                                    curr_id = instr["id"]
-                                    instr_course_list = []
-                                    for dirpath2, dirs2, files2 in os.walk("data\\source_course_files"):
-                                        for filename2 in files2:
-                                            fname2 = os.path.join(dirpath2, filename2)
-                                            with open(fname2, "r", errors="ignore") as myfile2:
-                                                #     print(myfile2.read())
-                                                values2 = json.load(myfile2)
-                                                for course2 in values2["unitinfo"]["items"]:
-                                                    for instr2 in course2["visible_instructors"]:
-                                                        if instr2["id"] == curr_id:
-                                                            instr_course_list.append(str(course2["id"]))
-                                    username = instr["display_name"].lower().replace(" ", "_")
-                                    user_file.write(";;;".join( [str(instr["id"]), username, self.encrypt_password(str(instr["id"])),
-                                                    "yyyy-MM-dd_HH:mm:ss.SSS", "instructor", username+"@gmail.com",
-                                                    instr["display_name"], instr["job_title"], "--".join(instr_course_list)] ) + "\n")
+        """NEW LOGIC UNDER CURRENT USE
+        1. Read all the instructors from all json files, and store them in a dict(instr_list) of dict items of the format 
+            {instr["id"]: [instr["display_name"], instr["job_title"], [course["id"],]}
+        2. Read all instructors from data\\user.txt and store their id's in a list of integers(id_list)
+        3. Open the data\\user.txt in append mode
+        4. for each instr in instr_list, if instr["id"] not in id_list, write this as a new instructor string
+        """
 
-                                # print(type(instr["id"]))
-
-            #                     flag = 0
-            #                     # user_file.write(instr["display_name"]+"\n")
-            #
-            #                     user_file.seek(0, 0)
-            #                     for line in user_file:
-            #
-            #                         if line.split(";;;")[0] == str(instr["id"]):
-            #                             flag = 1
-            #                             break
-            #                     if flag == 0:
-            #                         username = instr["display_name"].lower().replace(" ", "_")
-            #                         user_file.write(";;;".join( [str(instr["id"]), username, self.encrypt_password(str(instr["id"])),
-            #                                         "yyyy-MM-dd_HH:mm:ss.SSS", "instructor", username+"@gmail.com",
-            #                                         instr["display_name"], instr["job_title"]] ) + ";;;\n")
-            #                     # if instr["display_name"]:
-            #                     #     cnt += 1
-            #                     #     print(instr["display_name"])
-            #     # for a_file in filesprint(files)
-            # user_file.seek(0, 0)
-            # for line in user_file:
-            #     if line.split(";;;") == "instructor":
-            #         instr_course_list = []
-            #         instr_course_list.append(line.split(";;;")[0])
-            #         for dirpath, dirs, files in os.walk("..\\data\\source_course_files"):
-            #             for filename in files:
-            #                 fname = os.path.join(dirpath, filename)
-            #                 with open(fname, "r", errors="ignore") as myfile:
-            #                     #     print(myfile.read())
-            #                     values = json.load(myfile)
-            #                     for course in values["unitinfo"]["items"]:
-            #                         for instr in course["visible_instructors"]:
-            #                             if instr["id"] == instr_course_list[0]:
-            #                                 instr_course_list.append(course["id"])
-            #         user_file.seek(0, 0)
-
-
-
-        # print(cnt)
+        instr_dict = {}
+        for dirpath, dirs, files in os.walk("data\\source_course_files"):
+            for filename in files:
+                fname = os.path.join(dirpath, filename)
+                with open(fname, "r", errors="ignore") as myfile:
+                #     print(myfile.read())
+                    values = json.load(myfile)
+                    for course in values["unitinfo"]["items"]:
+                        for instr in course["visible_instructors"]:
+                            if instr["id"] not in instr_dict:
+                                instr_dict[instr["id"]] = [instr["display_name"], instr["job_title"], [str(course["id"])]]
+                            else:
+                                instr_dict[instr["id"]][2].append(str(course["id"]))
+        id_list = []
+        with open("data\\user.txt", "a+", encoding="utf-8") as user_file:
+            user_file.seek(0, 0)
+            for line in user_file:
+                id_list.append(int(line.split(";;;")[0]))
+            for item in instr_dict:
+                if item not in id_list:
+                    username = instr_dict[item][0].lower().replace(" ", "_")
+                    user_file.write(";;;".join( [str(item), username, self.encrypt_password(str(item)),
+                                    "yyyy-MM-dd_HH:mm:ss.SSS", "instructor", username+"@gmail.com",
+                                    instr_dict[item][0], instr_dict[item][1], "--".join(instr_dict[item][2])] ) + "\n")
         return None
 
     def get_instructors_by_page(self, page):
@@ -173,3 +149,4 @@ class Instructor(User):
 # li = [ len(x.course_id_list) for x in Instructor(123456, "username_two", "passsword_two", "yyyy-MM-dd_HH:mm:ss.SSS", "instructor", "harry@gmail.com", "harry potter", "magic", ["1a", "2b", "3c", "0z", "6f", "4d", "5e"]).generate_instructor_figure1()[:10] ]
 # print(li)
 # print(repr(Instructor().generate_instructor_figure1()))
+# Instructor().get_instructors()
