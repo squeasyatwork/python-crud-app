@@ -46,7 +46,7 @@ class Admin(User):
         # Open the admins file to search for current admin object
         with open("user_admin.txt", "w+") as adminFile:
             # Define a regex pattern to obtain all admin entries
-            pattern = re.compile(r';((\w)+);')
+            pattern = re.compile(r';((\w)+);') 
             matches = pattern.finditer(adminFile.read())
             for match in matches:   # Compare each admin entry
                 if(match.groups()[0] == self.username):   # Match found

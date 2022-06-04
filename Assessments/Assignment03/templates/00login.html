@@ -34,7 +34,10 @@
             <h1 class="h3 mb-3 fw-normal">Please sign in</h1>
 
              <!-- student code start -->
-
+            <form action="/user/login" method="POST">
+                <input type="text" name="username" placeholder="Username" id="username">
+                <input type="password" name="password" placeholder="Password" id="password">
+            </form>
             <!-- student code end -->
             <br/>
             <button class="w-100 btn btn-lg btn-primary" id="loginbtn" type="button">Sign in</button>

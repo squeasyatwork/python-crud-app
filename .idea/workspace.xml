@@ -1,14 +1,30 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="7f47cde6-939e-486b-adab-200cbf12e9ec" name="Changes" comment="" />
+    <list default="true" id="7f47cde6-939e-486b-adab-200cbf12e9ec" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/AppliedClasses/Week06/w6als.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assessments/Assignment01/.ipynb_checkpoints/assignment1_template-Copy1-checkpoint.ipynb" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assessments/Assignment01/assignment1_template.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/Assessments/Assignment01/assignment1_template.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Assessments/Assignment01/assignment1_template.pdf" beforeDir="false" afterPath="$PROJECT_DIR$/Assessments/Assignment01/assignment1_template.pdf" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
   </component>
   <component name="ProjectId" id="26Ds8DqM2vmhP5d1HDuJFwpyZZ6" />
   <component name="ProjectViewState">
