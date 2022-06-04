@@ -2,7 +2,10 @@ from model.user import User
 import os
 import json
 import math
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt, numpy as np
+
 
 
 class Instructor(User):
@@ -53,6 +56,11 @@ class Instructor(User):
                         values = json.load(myfile)
                         for course in values["unitinfo"]["items"]:
                             for instr in course["visible_instructors"]:
+                                user_file.seek(0, 0)
+                                for line in user_file:
+                                    if line.split(";;;")[0] == str(instr["id"]):
+                                        instr_list.append(instr["id"])
+                                        break
                                 if instr["id"] not in instr_list:
                                     instr_list.append(instr["id"])
                                     curr_id = instr["id"]
@@ -117,7 +125,7 @@ class Instructor(User):
     def get_instructors_by_page(self, page):
         instr_list = []
         num_of_pages = 0
-        with open("..\\data\\user.txt", "r", encoding="utf-8") as user_file:
+        with open("data\\user.txt", "r", encoding="utf-8") as user_file:
             for line in user_file:
                 if line.split(";;;")[4] == "instructor":
                     instr_list.append(Instructor(int(line.split(";;;")[0]), line.split(";;;")[1], line.split(";;;")[2], line.split(";;;")[3], line.split(";;;")[4], line.split(";;;")[5], line.split(";;;")[6], line.split(";;;")[7], line.strip().split(";;;")[8]))
@@ -133,7 +141,7 @@ class Instructor(User):
     def generate_instructor_figure1(self):
         instr_list = []
         num_of_pages = 0
-        with open("..\\data\\user.txt", "r", encoding="utf-8") as user_file:
+        with open("data\\user.txt", "r", encoding="utf-8") as user_file:
             for line in user_file:
                 if line.split(";;;")[4] == "instructor":
                     instr_list.append(Instructor(int(line.split(";;;")[0]), line.split(";;;")[1], line.split(";;;")[2],
@@ -145,7 +153,7 @@ class Instructor(User):
         labels, ys = zip(*top_instr_list)
         xs = np.arange(len(labels))
         width = 0.7
-        plt.rcParams.update({'font.size': 8})
+        plt.rcParams.update({'font.size': 7})
         plt.bar(xs, ys, width, align='center')
 
         plt.xticks(xs, labels)  # Replace default x-ticks with xs, then replace xs with labels
@@ -156,8 +164,9 @@ class Instructor(User):
         plt.title("Top 10 Instructors Teaching Most Number of Courses")
         plt.xlabel("Instructor title")
         plt.ylabel("Number of courses")
-        plt.show()
+        # plt.show()
         # return top_instr_list
+        plt.savefig("static\\img\\instructor_figure1.png")
         return "My understanding: This figure shows the top ten instructors who teach the highest number of courses."
 
 

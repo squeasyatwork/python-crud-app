@@ -46,7 +46,7 @@ class Student(User):
     def delete_student_by_id(self, uid):
         with open("data\\user.txt", "r", encoding="utf-8") as user_file:
             lines = user_file.readlines()
-        with open("..\\data\\user.txt", "w", encoding="utf-8") as user_file:
+        with open("data\\user.txt", "w", encoding="utf-8") as user_file:
             for line in lines:
                 if line.split(";;;")[0] != str(uid):
                     user_file.write(line)

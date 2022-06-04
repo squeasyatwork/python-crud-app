@@ -61,18 +61,27 @@ Instructor List
     <div>
         {% if total_pages != 0 %}
         <nav aria-label="...">
-            <ul class="pagination justify-content-center">
+            <ul class="pagination justify-content-center" max-size="10">
                 <li class="page-item"><a class="page-link" href="/instructor/instructor-list?page=1">Start</a></li>
                 <li class="page-item disabled"><span class="page-link">...</span></li>
 
-                {% for num in page_num_list %}
-                {% if num == current_page %}
-                <li class="page-item active"><a class="page-link" href="/instructor/instructor-list?page={{num}}">{{num}}</a></li>
+                {% if current_page + 19 <= total_pages %}
+                    {% for num in page_num_list[current_page-1:current_page+19] %}
+                        {% if num == current_page %}
+                            <li class="page-item active"><a class="page-link" href="/instructor/instructor-list?page={{num}}">{{num}}</a></li>
+                        {% else %}
+                            <li class="page-item "><a class="page-link" href="/instructor/instructor-list?page={{num}}">{{num}}</a></li>
+                        {% endif %}
+                    {% endfor %}
                 {% else %}
-                <li class="page-item "><a class="page-link" href="/instructor/instructor-list?page={{num}}">{{num}}</a></li>
+                    {% for num in page_num_list[current_page-1:] %}
+                        {% if num == current_page %}
+                            <li class="page-item active"><a class="page-link" href="/instructor/instructor-list?page={{num}}">{{num}}</a></li>
+                        {% else %}
+                            <li class="page-item "><a class="page-link" href="/instructor/instructor-list?page={{num}}">{{num}}</a></li>
+                        {% endif %}
+                    {% endfor %}
                 {% endif %}
-                {% endfor %}
-
                 <li class="page-item disabled"><span class="page-link">...</span></li>
                 <li class="page-item"><a class="page-link" href="/instructor/instructor-list?page={{total_pages}}">End</a></li>
 

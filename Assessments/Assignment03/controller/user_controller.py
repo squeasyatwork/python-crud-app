@@ -15,9 +15,14 @@ model_student = Student()
 
 
 def generate_user(login_user_str):
-    login_user = None # a User object
-
-    return login_user
+    field_list = [x for x in login_user_str.split(";;;")]
+    if field_list[4].strip() == "admin":
+        return Admin(int(field_list[0]), field_list[1], field_list[2], field_list[3], field_list[4].strip())
+    elif field_list[4] == "student":
+        return Student(int(field_list[0]), field_list[1], field_list[2], field_list[3], field_list[4], field_list[5].strip())
+    elif field_list[4] == "instructor":
+        return Instructor(int(field_list[0]), field_list[1], field_list[2], field_list[3], field_list[4],
+                          field_list[5], field_list[6], field_list[7], field_list[8].strip().split("--"))
 
 
 # use @user_page.route("") for each page url
@@ -37,6 +42,7 @@ def login_post():
             # print("VALID UN PW VALUES!")
             if usr.authenticate_user(username, password)[0]:
                 user_info = usr.authenticate_user(username, password)[1]
+                usr.uid = int(user_info.split(";;;")[0])
                 usr.role = user_info.split(";;;")[4]
                 usr = generate_user(user_info)
                 User.current_login_user = usr
@@ -51,22 +57,11 @@ def login_post():
             return render_err_result(msg="Login failure! Enter valid values for username, password and email")
         # print("USERNAME IS:\n", username)
 
+
 @user_page.route("/logout", methods=["GET"])
 def logout():
     User.current_login_user = None
     return render_template("01index.html")
-
-
-def generate_user(login_user_str):
-    field_list = [x for x in login_user_str.split(";;;")]
-    if field_list[4].strip() == "admin":
-        return Admin(int(field_list[0]), field_list[1], field_list[2], field_list[3], field_list[4].strip())
-    elif field_list[4] == "student":
-        return Student(int(field_list[0]), field_list[1], field_list[2], field_list[3], field_list[4], field_list[5].strip())
-    elif field_list[4] == "instructor":
-        return Instructor(int(field_list[0]), field_list[1], field_list[2], field_list[3], field_list[4],
-                       field_list[5], field_list[6], field_list[7], field_list[8].strip().split("--"))
-
 
 
 @user_page.route("/register", methods=["GET"])
@@ -108,8 +103,9 @@ def register_post():
 def student_list():
     if User.current_login_user is not None:
         context = {}
-        context["current_page"] = request.values["page"] if "page" in request.values else 1
         context["current_user_role"] = User.current_login_user.role
+        context["one_page_user_list"], context["total_pages"], context["total_num"] = Student().get_students_by_page(1)
+        context["current_page"] = int(request.values["page"]) if "page" in request.values and request.values["page"].isnumeric() and int(request.values["page"]) <= int(context["total_pages"]) else 1
         context["one_page_user_list"], context["total_pages"], context["total_num"] = Student().get_students_by_page(int(context["current_page"]))
         context["page_num_list"] = [i + 1 for i in range(context["total_pages"])]
         if context["one_page_user_list"] is None:
@@ -117,3 +113,28 @@ def student_list():
     else:
         return redirect(url_for("index_page.index"))
     return render_template("10student_list.html", **context)
+
+
+@user_page.route("/student-info", methods=["GET"])
+def student_info():
+    if User.current_login_user is not None:
+        context = {}
+        context["current_user_role"] = User.current_login_user.role
+        if context["current_user_role"] == "admin":
+            context["student"] = Student().get_student_by_id(int(request.values["id"])) if "id" in request.values and Student().get_student_by_id(int(request.values["id"])) is not None else Student()
+        elif context["current_user_role"] == "student":
+            context["student"] = Student().get_student_by_id(User.current_login_user.uid)
+    else:
+        return redirect(url_for("index_page.index"))
+    return render_template("11student_info.html", **context)
+
+
+@user_page.route("/student-delete", methods=["GET"])
+def student_delete():
+    if User.current_login_user is not None:
+        context = {}
+        context["current_user_role"] = User.current_login_user.role
+        Student().delete_student_by_id(int(request.values["id"]))
+    else:
+        return redirect(url_for("index_page.index"))
+    return redirect(url_for("user_page.student_list"))
