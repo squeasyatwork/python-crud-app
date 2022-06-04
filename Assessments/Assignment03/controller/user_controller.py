@@ -38,8 +38,10 @@ def login_post():
             if usr.authenticate_user(username, password)[0]:
                 user_info = usr.authenticate_user(username, password)[1]
                 usr.role = user_info.split(";;;")[4]
+                usr = generate_user(user_info)
                 User.current_login_user = usr
                 # print("LOGIN SUCCESS!!", user_info)
+                print(User.current_login_user.role)
                 return render_result(msg="Login success!")
             else:
                 # print("WRONG CREDENTIALS!!")
@@ -55,8 +57,16 @@ def logout():
     return render_template("01index.html")
 
 
-# def generate_user():
-#
+def generate_user(login_user_str):
+    field_list = [x for x in login_user_str.split(";;;")]
+    if field_list[4].strip() == "admin":
+        return Admin(int(field_list[0]), field_list[1], field_list[2], field_list[3], field_list[4].strip())
+    elif field_list[4] == "student":
+        return Student(int(field_list[0]), field_list[1], field_list[2], field_list[3], field_list[4], field_list[5].strip())
+    elif field_list[4] == "instructor":
+        return Instructor(int(field_list[0]), field_list[1], field_list[2], field_list[3], field_list[4],
+                       field_list[5], field_list[6], field_list[7], field_list[8].strip().split("--"))
+
 
 
 @user_page.route("/register", methods=["GET"])
@@ -79,6 +89,7 @@ def register_post():
             register_result = usr.register_user(username, password, email, register_time, role)
             if register_result:
                 print(render_result())
+                print(register_time)
                 return render_result(msg="Registration successful! Login to continue.")
                 # print("(print)REGISTER SUCCESS!")
             else:
@@ -91,3 +102,18 @@ def register_post():
         # print("EMAIL IS:", email)
         # print("TIME IS:", register_time)
         # print("ROLE IS:", role)
+
+
+@user_page.route("/student-list", methods=["GET"])
+def student_list():
+    if User.current_login_user is not None:
+        context = {}
+        context["current_page"] = request.values["page"] if "page" in request.values else 1
+        context["current_user_role"] = User.current_login_user.role
+        context["one_page_user_list"], context["total_pages"], context["total_num"] = Student().get_students_by_page(int(context["current_page"]))
+        context["page_num_list"] = [i + 1 for i in range(context["total_pages"])]
+        if context["one_page_user_list"] is None:
+            context["one_page_user_list"] = []
+    else:
+        return redirect(url_for("index_page.index"))
+    return render_template("10student_list.html", **context)

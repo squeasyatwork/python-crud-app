@@ -23,7 +23,7 @@ class User:
               password, register time, and role as a string delimited by ";;;"
         """
         return (str(self.uid) + ";;;" + str(self.username)
-                + ";;;" + str(self.password) + ";;;" + str(self.register_time)
+                + ";;;" + self.encrypt_password(self.password) + ";;;" + str(self.register_time)
                 + ";;;" + str(self.role))
 
     def validate_username(self, username):
@@ -216,25 +216,27 @@ class User:
         time_string += str(1970+years)
         months = int(register_time // month)
         register_time -= (months * month)
-        time_string += "-" + "{:02d}".format(1 + months)
+        time_string += "-" + "{:02d}".format(months)
         # days = get_day_from_timestamp(original_register_time/1000) - 1
-        days = int((register_time // day) + 1)
-        register_time -= ((days-1) * day)
-        time_string += "-" + "{:02d}".format(1 + days)
+        days = int((register_time // day))
+        register_time -= (days * day)
+        time_string += "-" + "{:02d}".format(days)
         hours = int(register_time // hour)
         register_time -= (hours * hour)
-        time_string += "_" + "{:02d}".format(hours + 7)
+        time_string += "_" + "{:02d}".format(hours)
         minutes = int(register_time // minute)
         register_time -= (minutes * minute)
-        time_string += ":" + "{:02d}".format(minutes-3)
+        time_string += ":" + "{:02d}".format(minutes)
         seconds = int(register_time // second)
         register_time -= (seconds * second)
         time_string += ":" + "{:02d}".format(seconds)
         millis = int(register_time)
-        time_string += "." + "{:02d}".format(millis)
+        register_time -= millis
+        time_string += "." + "{:03d}".format(millis)
+        # return original_register_time, time_string, register_time
         return time_string
 
 
-# foo = User(username="username", password="12345678")
-# # print(foo.validate_email('f9ij@.com'))
+# foo = print(User(username="username", password="12345678").date_conversion("1654349305203"))
+# print(foo.validate_email('f9ij@.com'))
 # foo.clear_user_data()

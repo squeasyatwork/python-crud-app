@@ -2,7 +2,7 @@ from model.user import User
 import os
 import json
 import math
-import matplotlib as mpl, pandas as pd
+import matplotlib.pyplot as plt, numpy as np
 
 
 class Instructor(User):
@@ -18,7 +18,7 @@ class Instructor(User):
         #         + ";;;" + str(self.password) + ";;;" + str(self.register_time)
         #         + ";;;" + str(self.role) + ";;;" + str(self.email) + ";;;" + str(self.display_name)
         #         + ";;;" + str(self.job_title) + ";;;" + "--".join(self.course_id_list))
-        return ";;;".join([str(self.uid), self.username, self.password, self.register_time, self.role,
+        return ";;;".join([str(self.uid), self.username, self.encrypt_password(self.password), self.register_time, self.role,
                            self.email, self.display_name, self.job_title, "--".join(self.course_id_list)])
 
     def get_instructors(self):
@@ -139,8 +139,28 @@ class Instructor(User):
                     instr_list.append(Instructor(int(line.split(";;;")[0]), line.split(";;;")[1], line.split(";;;")[2],
                                                  line.split(";;;")[3], line.split(";;;")[4], line.split(";;;")[5],
                                                  line.split(";;;")[6], line.split(";;;")[7],
-                                                 line.strip().split(";;;")[8]))
+                                                 line.strip().split(";;;")[8].split("--")))
+        instr_list.sort(key=lambda x: len(x.course_id_list), reverse=True)
+        top_instr_list = [ ("\n".join(x.display_name.split()[:3]), len(x.course_id_list)) for x in instr_list[:10] ]
+        labels, ys = zip(*top_instr_list)
+        xs = np.arange(len(labels))
+        width = 0.7
+        plt.rcParams.update({'font.size': 8})
+        plt.bar(xs, ys, width, align='center')
+
+        plt.xticks(xs, labels)  # Replace default x-ticks with xs, then replace xs with labels
+        # plt.xticks(rotation=75)
+        plt.yticks(ys)
+        for index, value in enumerate(ys):
+            plt.text(index, value, str(value), ha="center", va="bottom")
+        plt.title("Top 10 Instructors Teaching Most Number of Courses")
+        plt.xlabel("Instructor title")
+        plt.ylabel("Number of courses")
+        plt.show()
+        # return top_instr_list
+        return "My understanding: This figure shows the top ten instructors who teach the highest number of courses."
 
 
-
-# print(Instructor(123456, "username_two", "passsword_two", "yyyy-MM-dd_HH:mm:ss.SSS", "instructor", "harry@gmail.com", "harry potter", "magic", ["1a", "2b", "3c", "0z", "6f", "4d", "5e"]).get_instructors_by_page(2))
+# li = [ len(x.course_id_list) for x in Instructor(123456, "username_two", "passsword_two", "yyyy-MM-dd_HH:mm:ss.SSS", "instructor", "harry@gmail.com", "harry potter", "magic", ["1a", "2b", "3c", "0z", "6f", "4d", "5e"]).generate_instructor_figure1()[:10] ]
+# print(li)
+# print(repr(Instructor().generate_instructor_figure1()))

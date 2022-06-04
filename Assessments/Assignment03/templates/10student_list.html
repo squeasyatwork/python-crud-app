@@ -23,7 +23,31 @@ User List
     <div>
         <table class="table table-striped table-hover table-bordered">
             <!-- student code start -->
-
+            <thead>
+            <tr style="background-color: #bcbebf;">
+                <th>#</th>
+                <th>Username</th>
+                <th>Password</th>
+                <th style="width:10%">Register Time</th>
+                <th>Role</th>
+                <th>Email</th>
+                <th>&nbsp;</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for student in one_page_user_list %}
+            <tr>
+                <td>{{loop.index}}</td>
+                <td>{{student.username}}</td>
+                <td>{{student.password}}</td>
+                <td style="width:10%; word-wrap: break-word;word-break:break-all;">{{student.register_time}}</td>
+                <td>{{student.role}}</td>
+                <td>{{student.email}}</td>
+                <td><a href="/user/student-info?id={{student.uid}}" target="_blank" class="btn btn-info">Details</a>
+                <a href="/user/student-delete?id={{student.uid}}" target="_blank" class="btn btn-danger">Delete</a></td>
+            </tr>
+            {% endfor %}
+            </tbody>
             <!-- student code end -->
         </table>
 
