@@ -131,18 +131,18 @@ class Instructor(User):
         width = 0.7
         plt.rcParams.update({'font.size': 7})
         plt.bar(xs, ys, width, align='center')
-
         plt.xticks(xs, labels)  # Replace default x-ticks with xs, then replace xs with labels
         # plt.xticks(rotation=75)
         plt.yticks(ys)
         for index, value in enumerate(ys):
             plt.text(index, value, str(value), ha="center", va="bottom")
         plt.title("Top 10 Instructors Teaching Most Number of Courses")
-        plt.xlabel("Instructor title")
-        plt.ylabel("Number of courses")
+        plt.xlabel("Instructor Title")
+        plt.ylabel("Number of Courses")
         # plt.show()
         # return top_instr_list
         plt.savefig("static\\img\\instructor_figure1.png")
+        plt.clf()
         return "My understanding: This figure shows the top ten instructors who teach the highest number of courses."
 
 

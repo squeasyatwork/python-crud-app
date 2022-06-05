@@ -45,6 +45,7 @@ class User:
     def clear_user_data(self):
         with open("data/user.txt", "w") as userFile:
             pass
+        return None
 
     def authenticate_user(self, username, password):
         """

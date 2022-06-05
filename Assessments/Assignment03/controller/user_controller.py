@@ -1,4 +1,3 @@
-
 from flask import Blueprint, render_template, request, redirect, url_for
 from lib.helper import render_result, render_err_result, course_data_path, user_data_path
 from model.course import Course
@@ -61,7 +60,7 @@ def login_post():
 @user_page.route("/logout", methods=["GET"])
 def logout():
     User.current_login_user = None
-    return render_template("01index.html")
+    return redirect(url_for("index_page.index"))
 
 
 @user_page.route("/register", methods=["GET"])

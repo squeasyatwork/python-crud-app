@@ -62,12 +62,17 @@ def instructor_analysis():
     # if Instructor.instructor_data.shape[0] == 0:
     #     return render_err_result(msg="no instructor in datafile")
     if User.current_login_user is not None:
-        explain1 = model_instructor.generate_instructor_figure1()
+        try:
+            explain1 = model_instructor.generate_instructor_figure1()
+        except:
+            return render_err_result(msg="No instructors in database! Process Instructor Data first")
+        # print("right below except!")
         context = {}
         context["current_user_role"] = User.current_login_user.role
         context['explain1'] = explain1
     else:
         return redirect(url_for("index_page.index"))
+    # print("right below if loop!")
     return render_template("08instructor_analysis.html", **context)
 
 
