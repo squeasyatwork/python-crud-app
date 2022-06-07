@@ -1,9 +1,10 @@
 import os
 import json
 import math
-# import matplotlib
-# matplotlib.use('Agg')
-import matplotlib.pyplot as plt, numpy as np
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import numpy as np
 
 
 class Course:
@@ -154,7 +155,7 @@ class Course:
 
     def generate_course_figure1(self):
         subcat_dict = {}
-        with open("../data/course.txt", "r", encoding="utf-8") as course_file:
+        with open("data/course.txt", "r", encoding="utf-8") as course_file:
             for line in course_file:
                 if line.strip("\n").split(";;;")[2] is not None and line.strip("\n").split(";;;")[2] not in subcat_dict:
                     subcat_dict[line.strip("\n").split(";;;")[2]] = 0
@@ -169,6 +170,7 @@ class Course:
         xs = np.arange(len(labels))
         width = 0.7
         plt.rcParams.update({'font.size': 7})
+        plt.rcParams.update({'figure.autolayout': True})
         plt.bar(xs, ys, width, align='center')
         plt.xticks(xs, labels)  # Replace default x-ticks with xs, then replace xs with labels
         # plt.xticks(rotation=75)
@@ -180,7 +182,7 @@ class Course:
         plt.ylabel("Number of Subscribers")
         plt.show()
         # return top_instr_list
-        plt.savefig("../static/img/instructor_figure1.png")
+        plt.savefig("static/img/course_figure1.png", bbox_inches="tight", aspect="auto")
         plt.clf()
         return "My understanding: This figure shows the top ten subcategory of courses that have the highest number of subscribers that have enroled in it."
 
@@ -198,6 +200,7 @@ class Course:
         xs = np.arange(len(labels))
         width = 0.7
         plt.rcParams.update({'font.size': 7})
+        plt.rcParams.update({'figure.autolayout': True})
         plt.bar(xs, ys, width, align='center')
         plt.xticks(xs, labels)  # Replace default x-ticks with xs, then replace xs with labels
         # plt.xticks(rotation=75)
@@ -206,21 +209,99 @@ class Course:
             plt.text(index, value, str(value), ha="center", va="bottom")
         plt.title("Top 10 Courses With Lowest Avg. Rating Having More Than 50000 Reviews")
         plt.xlabel("Course Title")
-        plt.ylabel("Rating")
+        plt.ylabel("Average Rating")
         # plt.show()
         # return top_instr_list
-        plt.savefig("static/img/course_figure2.png")
+        plt.savefig("static/img/course_figure2.png", bbox_inches="tight", aspect="auto")
         plt.clf()
         return "My understanding: This figure shows the top ten courses which have received the lowest rating based on more than 50000 reviews."
 
     def generate_course_figure3(self):
-        pass
+        courses_list = []
+        with open("data/course.txt", "r", encoding="utf-8") as course_file:
+            for line in course_file:
+                if 100000 > int(line.strip("\n").split(";;;")[10]) > 10000:
+                    courses_list.append([ line.strip("\n").split(";;;")[6],
+                                          float(line.strip("\n").split(";;;")[9]).__round__(3),
+                                          int(line.strip("\n").split(";;;")[10])
+                                          ])
+
+        labels, ys = zip(*[[item[2], item[1]] for item in courses_list])
+        xs = np.arange(len(labels))
+        # width = 0.7
+        plt.rcParams.update({'font.size': 6})
+        plt.rcParams.update({'figure.autolayout': True})
+        plt.scatter(xs, ys)
+        plt.xticks(xs, labels)  # Replace default x-ticks with xs, then replace xs with labels
+        # plt.xticks(rotation=75)
+        plt.yticks(ys)
+        for index, value in enumerate(ys):
+            plt.text(index, value, str(value), ha="center", va="bottom")
+        plt.title("Distribution of Avg. Rating of Courses Having 10,000 to 100,000 Subscribers")
+        plt.xlabel("Num of Subscribers")
+        plt.ylabel("Average Rating")
+        plt.show()
+        # return top_instr_list
+        plt.savefig("static/img/course_figure3.png", bbox_inches="tight", aspect="auto")
+        plt.clf()
+        return "My understanding: This figure shows the distribution of the average rating of courses that have 10,000 to 100,000 subscribers."
 
     def generate_course_figure4(self):
-        pass
+        cat_dict = {}
+        with open("data/course.txt", "r", encoding="utf-8") as course_file:
+            for line in course_file:
+                if line.strip("\n").split(";;;")[0] is not None and line.strip("\n").split(";;;")[0] not in cat_dict:
+                    cat_dict[line.strip("\n").split(";;;")[0]] = 0
+            course_file.seek(0, 0)
+            for line in course_file:
+                if line.strip("\n").split(";;;")[0] is not None:
+                    cat_dict[line.strip("\n").split(";;;")[0]] += 1
+        cat_list = [[ " ".join(item[0].split()[:3]), item[1] ] for item in cat_dict.items()]
+        cat_list.sort(key=lambda x: x[1])
+        labels, ys = zip(*cat_list)
+        explode_list = [0.2 if item==len(ys)-2 else 0 for item in range(len(ys))]
+        plt.rcParams.update({'font.size': 7})
+        plt.rcParams.update({'figure.autolayout': True})
+        patches, texts = plt.pie(ys, explode=explode_list)
+        plt.legend(patches, labels, loc="best")
+        plt.tight_layout()
+        plt.axis("equal")
+        plt.title("Distribution of Courses by Category")
+        # plt.show()
+        plt.savefig("static/img/course_figure4.png", bbox_inches="tight", aspect="auto")
+        plt.clf()
+        return "My understanding: This figure shows the distribution of courses by the main course category."
+
 
     def generate_course_figure5(self):
-        pass
+        xs = ["Have Reviews", "Don\'t Have Reviews", "Nulls"]
+        label_values_list = [0, 0, 0]
+        with open("data/course.txt", "r", encoding="utf-8") as course_file:
+            for line in course_file:
+                if line.strip("\n").split(";;;")[10] != "null" and int(line.strip("\n").split(";;;")[10]) > 0:
+                    label_values_list[0] += 1
+                elif line.strip("\n").split(";;;")[10] != "null" and int(line.strip("\n").split(";;;")[10]) == 0:
+                    label_values_list[1] += 1
+                else:
+                    label_values_list[2] += 1
+        width = 0.7
+        plt.rcParams.update({'font.size': 7})
+        plt.rcParams.update({'figure.autolayout': True})
+        ys = label_values_list
+        plt.bar(xs, ys, width, align='center')
+        # plt.xticks(xs, labels)  # Replace default x-ticks with xs, then replace xs with labels
+        # plt.xticks(rotation=75)
+        plt.yticks(ys)
+        for index, value in enumerate(ys):
+            plt.text(index, value, str(value), ha="center", va="bottom")
+        plt.title("Number of Courses With and Without Reviews")
+        plt.xlabel("Has Reviews?")
+        plt.ylabel("Number of Courses")
+        # plt.show()
+        # return top_instr_list
+        plt.savefig("static/img/course_figure5.png", bbox_inches="tight", aspect="auto")
+        plt.clf()
+        return "My understanding: This figure shows the number of courses which have reviews and which don\'t have reviews."
 
     def generate_course_figure6(self):
         pass

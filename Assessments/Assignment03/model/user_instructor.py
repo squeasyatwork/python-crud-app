@@ -64,11 +64,12 @@ class Instructor(User):
         END OF OLD WORKING CODE
         """
 
-        """NEW LOGIC UNDER CURRENT USE
-        1. Read all the instructors from all json files, and store them in a dict(instr_list) of dict items of the format 
-            {instr["id"]: [instr["display_name"], instr["job_title"], [course["id"],]}
-        2. Read all instructors from data\\user.txt and store their id's in a list of integers(id_list)
-        3. Open the data\\user.txt in append mode
+        """
+        NEW LOGIC UNDER CURRENT USE
+        1. Read all the instructors from all json files, and store them in a dict(instr_dict) of dict items of the format 
+            {instr["id"]: [instr["display_name"], instr["job_title"], [course["id"],]]}
+        2. Read all instructors from data/user.txt and store their id's in a list of integers(id_list)
+        3. Open the data/user.txt in append mode
         4. for each instr in instr_list, if instr["id"] not in id_list, write this as a new instructor string
         """
 
@@ -86,25 +87,31 @@ class Instructor(User):
                             else:
                                 instr_dict[instr["id"]][2].append(str(course["id"]))
         id_list = []
-        with open("data\\user.txt", "a+", encoding="utf-8") as user_file:
+        with open("data/user.txt", "a+", encoding="utf-8") as user_file:
             user_file.seek(0, 0)
             for line in user_file:
                 id_list.append(int(line.split(";;;")[0]))
             for item in instr_dict:
                 if item not in id_list:
                     username = instr_dict[item][0].lower().replace(" ", "_")
-                    user_file.write(";;;".join( [str(item), username, self.encrypt_password(str(item)),
+                    user_file.write(";;;".join( [ str(item), username, self.encrypt_password(str(item)),
                                     "yyyy-MM-dd_HH:mm:ss.SSS", "instructor", username+"@gmail.com",
-                                    instr_dict[item][0], instr_dict[item][1], "--".join(instr_dict[item][2])] ) + "\n")
+                                    instr_dict[item][0], instr_dict[item][1], "--".join(instr_dict[item][2])] ) + "\n"
+                                   )
         return None
 
     def get_instructors_by_page(self, page):
         instr_list = []
         num_of_pages = 0
-        with open("data\\user.txt", "r", encoding="utf-8") as user_file:
+        with open("data/user.txt", "r", encoding="utf-8") as user_file:
             for line in user_file:
                 if line.split(";;;")[4] == "instructor":
-                    instr_list.append(Instructor(int(line.split(";;;")[0]), line.split(";;;")[1], line.split(";;;")[2], line.split(";;;")[3], line.split(";;;")[4], line.split(";;;")[5], line.split(";;;")[6], line.split(";;;")[7], line.strip().split(";;;")[8]))
+                    instr_list.append(Instructor(int(line.split(";;;")[0]), line.split(";;;")[1],
+                                                 line.split(";;;")[2], line.split(";;;")[3], line.split(";;;")[4],
+                                                 line.split(";;;")[5], line.split(";;;")[6], line.split(";;;")[7],
+                                                 line.strip().split(";;;")[8].split("--")
+                                                 )
+                                      )
         max_pages = math.ceil(len(instr_list)/20)
         if page == max_pages:
             selected_instr_list = instr_list[20 * (page-1) :]
@@ -117,19 +124,24 @@ class Instructor(User):
     def generate_instructor_figure1(self):
         instr_list = []
         num_of_pages = 0
-        with open("data\\user.txt", "r", encoding="utf-8") as user_file:
+        with open("data/user.txt", "r", encoding="utf-8") as user_file:
             for line in user_file:
                 if line.split(";;;")[4] == "instructor":
                     instr_list.append(Instructor(int(line.split(";;;")[0]), line.split(";;;")[1], line.split(";;;")[2],
                                                  line.split(";;;")[3], line.split(";;;")[4], line.split(";;;")[5],
                                                  line.split(";;;")[6], line.split(";;;")[7],
-                                                 line.strip().split(";;;")[8].split("--")))
+                                                 line.strip().split(";;;")[8].split("--")
+                                                 )
+                                      )
         instr_list.sort(key=lambda x: len(x.course_id_list), reverse=True)
-        top_instr_list = [ ("\n".join(x.display_name.split()[:3]), len(x.course_id_list)) for x in instr_list[:10] ]
+        top_instr_list = [ ("\n".join(x.display_name.split()[:3]), len(x.course_id_list))
+                           for x in instr_list[:10]
+                           ]
         labels, ys = zip(*top_instr_list)
         xs = np.arange(len(labels))
         width = 0.7
         plt.rcParams.update({'font.size': 7})
+        plt.rcParams.update({'figure.autolayout': True})
         plt.bar(xs, ys, width, align='center')
         plt.xticks(xs, labels)  # Replace default x-ticks with xs, then replace xs with labels
         # plt.xticks(rotation=75)
@@ -141,7 +153,7 @@ class Instructor(User):
         plt.ylabel("Number of Courses")
         # plt.show()
         # return top_instr_list
-        plt.savefig("static\\img\\instructor_figure1.png")
+        plt.savefig("static/img/instructor_figure1.png", bbox_inches="tight", aspect="auto")
         plt.clf()
         return "My understanding: This figure shows the top ten instructors who teach the highest number of courses."
 
