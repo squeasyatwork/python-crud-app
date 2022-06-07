@@ -304,7 +304,37 @@ class Course:
         return "My understanding: This figure shows the number of courses which have reviews and which don\'t have reviews."
 
     def generate_course_figure6(self):
-        pass
+        subcat_dict = {}
+        with open("data/course.txt", "r", encoding="utf-8") as course_file:
+            for line in course_file:
+                if line.strip("\n").split(";;;")[2] is not None and line.strip("\n").split(";;;")[2] not in subcat_dict:
+                    subcat_dict[line.strip("\n").split(";;;")[2]] = 0
+            course_file.seek(0, 0)
+            for line in course_file:
+                if line.strip("\n").split(";;;")[2] is not None:
+                    subcat_dict[line.strip("\n").split(";;;")[2]] += 1
+        subcat_list = list(subcat_dict.items())
+        subcat_list.sort(key=lambda x: x[1])
+        bottom_subcat_list = [("\n".join(x[0].split()[:3]), x[1]) for x in subcat_list[:10]]
+        labels, ys = zip(*bottom_subcat_list)
+        xs = np.arange(len(labels))
+        width = 0.7
+        plt.rcParams.update({'font.size': 7})
+        plt.rcParams.update({'figure.autolayout': True})
+        plt.bar(xs, ys, width, align='center')
+        plt.xticks(xs, labels)  # Replace default x-ticks with xs, then replace xs with labels
+        # plt.xticks(rotation=75)
+        plt.yticks(ys)
+        for index, value in enumerate(ys):
+            plt.text(index, value, str(value), ha="center", va="bottom")
+        plt.title("Top 10 Subcategories Having Most Number of Subscribers")
+        plt.xlabel("Subcategory Title")
+        plt.ylabel("Number of Courses")
+        plt.show()
+        # return top_instr_list
+        plt.savefig("static/img/course_figure6.png", bbox_inches="tight", aspect="auto")
+        plt.clf()
+        return "My understanding: This figure shows the top ten subcategory of courses that have the least number of courses belonging to it."
 
 
-print(Course().generate_course_figure1())   # lines 538, 683 in user.txt and 833 in course.txt
+# print(Course().generate_course_figure1())   # lines 538, 683 in user.txt and 833 in course.txt

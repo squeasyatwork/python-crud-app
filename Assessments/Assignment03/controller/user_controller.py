@@ -53,7 +53,7 @@ def login_post():
                 return render_err_result(msg="Login failure! Wrong credentials.")
         else:
             # print("INVALID VALUE FOR USERNAME/PASSWORD!!!!")
-            return render_err_result(msg="Login failure! Enter valid values for username, password and email")
+            return render_err_result(msg="Login failure! Enter valid values for username and password.")
         # print("USERNAME IS:\n", username)
 
 
@@ -120,7 +120,7 @@ def student_info():
         context = {}
         context["current_user_role"] = User.current_login_user.role
         if context["current_user_role"] == "admin":
-            context["student"] = Student().get_student_by_id(int(request.values["id"])) if "id" in request.values and Student().get_student_by_id(int(request.values["id"])) is not None else Student()
+            context["student"] = Student().get_student_by_id(int(request.values["id"])) if "id" in request.values and request.values["id"].isnumeric() and Student().get_student_by_id(int(request.values["id"])) is not None else None
         elif context["current_user_role"] == "student":
             context["student"] = Student().get_student_by_id(User.current_login_user.uid)
     else:

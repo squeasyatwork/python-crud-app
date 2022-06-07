@@ -114,20 +114,21 @@ def course_delete():
 def course_analysis():
     context = {}
     if User.current_login_user:
-        explain1 = model_course.generate_course_figure1()
-        explain2 = model_course.generate_course_figure2()
-        explain3 = model_course.generate_course_figure3()
-        explain4 = model_course.generate_course_figure4()
-        explain5 = model_course.generate_course_figure5()
-        # explain6 = model_course.generate_course_figure6()
-
-
+        try:
+            explain1 = model_course.generate_course_figure1()
+            explain2 = model_course.generate_course_figure2()
+            explain3 = model_course.generate_course_figure3()
+            explain4 = model_course.generate_course_figure4()
+            explain5 = model_course.generate_course_figure5()
+            explain6 = model_course.generate_course_figure6()
+        except:
+            return render_err_result(msg="No courses in database! Process Course Data first")
         context['explain1'] = explain1
         context['explain2'] = explain2
         context['explain3'] = explain3
         context['explain4'] = explain4
         context['explain5'] = explain5
-        # context['explain6'] = explain6
+        context['explain6'] = explain6
         context['current_user_role'] = User.current_login_user.role
     else:
         return redirect(url_for("index_page.index"))

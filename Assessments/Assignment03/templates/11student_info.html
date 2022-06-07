@@ -14,14 +14,18 @@ Student Info
 {% block content%}
 <div class="container">
     <!-- student code start -->
-    id: {{ student.uid }}
-    <br><br>
-    username: {{ student.username }}
-    <br><br>
-    password: {{ student.password }}
-    <br><br>
-    email: {{ student.email }}
-    <br><br>
+    {% if student %}
+        id: {{ student.uid }}
+        <br><br>
+        username: {{ student.username }}
+        <br><br>
+        password: {{ student.password }}
+        <br><br>
+        email: {{ student.email }}
+        <br><br>
+    {% else %}
+        <h3>Student not found!</h3>
+    {% endif %}
     <!-- student code end -->
 </div>
 {% endblock%}

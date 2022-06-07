@@ -38,22 +38,30 @@ def instructor_list():
     return render_template("07instructor_list.html", **context)
 
 
-# def teach_courses():
-#     context = {}
-#
-#     if # check login user
-#         # get instructor id
-#
-#         # get values for course_list, total_num
-#
-#
-#         context['course_list'] = course_list
-#         context['total_num'] = total_num
-#         # add "current_user_role" to context
-#
-#     else:
-#         return redirect(url_for("index_page.index"))
-#     return render_template("09instructor_courses.html", **context)
+@instructor_page.route("/teach-courses", methods=["GET"])
+def teach_courses():
+    context = {}
+    if User.current_login_user is not None:
+        context["current_user_role"] = User.current_login_user.role
+        if context["current_user_role"] in ["admin", "instructor"]:
+            if context["current_user_role"] == "admin" and "id" not in request.values:
+                return render_err_result(msg="Course information not available: no Instructor chosen!")
+            elif context["current_user_role"] == "instructor" and "id" in request.values:
+                return render_err_result(msg="Course information not available: you can only view your own courses!")
+            else:
+                uid = request.values["id"] if "id" in request.values else User.current_login_user.uid
+                try:
+                    course_list, total_num = model_course.get_course_by_instructor_id(uid)
+                    context['course_list'] = course_list
+                    context['total_num'] = total_num
+                except:
+                    return render_err_result(msg="No courses recorded!")
+        else:
+            return render_err_result(msg="You do not have the permission to view this information!")
+
+    else:
+        return redirect(url_for("index_page.index"))
+    return render_template("09instructor_courses.html", **context)
 
 
 

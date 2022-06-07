@@ -33,7 +33,7 @@ class User:
             return False
 
     def validate_password(self, password):
-        if len(password) >= 8:
+        if len(password) >= 5:
             return True
         else:
             return False
