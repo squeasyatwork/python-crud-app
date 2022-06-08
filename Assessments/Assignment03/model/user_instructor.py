@@ -27,7 +27,7 @@ class Instructor(User):
     def get_instructors(self):
         """
         START OF OLD WORKING CODE
-        # with open("data\\user.txt", "a+", encoding="utf-8", errors="ignore") as user_file:
+        # with open("data/user.txt", "a+", encoding="utf-8", errors="ignore") as user_file:
         #     # user_file.seek(0, 0)
         #     instr_list = []
         #     for dirpath, dirs, files in os.walk("data\\source_course_files"):
@@ -74,7 +74,7 @@ class Instructor(User):
         """
 
         instr_dict = {}
-        for dirpath, dirs, files in os.walk("data\\source_course_files"):
+        for dirpath, dirs, files in os.walk("data/source_course_files"):
             for filename in files:
                 fname = os.path.join(dirpath, filename)
                 with open(fname, "r", errors="ignore") as myfile:
@@ -148,7 +148,8 @@ class Instructor(User):
         plt.yticks(ys)
         for index, value in enumerate(ys):
             plt.text(index, value, str(value), ha="center", va="bottom")
-        plt.title("Top 10 Instructors Teaching Most Number of Courses")
+        plt.rcParams.update({'font.size': 12})
+        plt.title("Top 10 Instructors Teaching Most Number of Courses", pad=20)
         plt.xlabel("Instructor Title")
         plt.ylabel("Number of Courses")
         # plt.show()

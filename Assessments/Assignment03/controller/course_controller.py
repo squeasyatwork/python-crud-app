@@ -77,7 +77,7 @@ def course_details():
     context = {}
     if User.current_login_user:
         req = request.values
-        course_id = req['id'] if "id" in req else -1
+        course_id = req['id'] if "id" in req and req["id"].isnumeric() and Course().get_course_by_course_id(int(req["id"])) is not None else -1
 
         if course_id == -1:
             course = None

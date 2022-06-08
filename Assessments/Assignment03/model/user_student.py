@@ -20,7 +20,7 @@ class Student(User):
     def get_students_by_page(self, page):
         stud_list = []
         num_of_pages = 0
-        with open("data\\user.txt", "r", encoding="utf-8") as user_file:
+        with open("data/user.txt", "r", encoding="utf-8") as user_file:
             for line in user_file:
                 if line.split(";;;")[4] == "student":
                     stud_list.append(Student(int(line.split(";;;")[0]), line.split(";;;")[1], line.split(";;;")[2],
@@ -36,7 +36,7 @@ class Student(User):
         return selected_stud_list, max_pages, len(stud_list)
 
     def get_student_by_id(self, uid):
-        with open("data\\user.txt", "r", encoding="utf-8") as user_file:
+        with open("data/user.txt", "r", encoding="utf-8") as user_file:
             for line in user_file:
                 if line.split(";;;")[0] == str(uid):
                     return Student(int(line.split(";;;")[0]), line.split(";;;")[1], line.split(";;;")[2],
@@ -45,9 +45,9 @@ class Student(User):
 
     def delete_student_by_id(self, uid):
         del_result = False
-        with open("data\\user.txt", "r", encoding="utf-8") as user_file:
+        with open("data/user.txt", "r", encoding="utf-8") as user_file:
             lines = user_file.readlines()
-        with open("data\\user.txt", "w", encoding="utf-8") as user_file:
+        with open("data/user.txt", "w", encoding="utf-8") as user_file:
             for line in lines:
                 if line.split(";;;")[0] != str(uid):
                     user_file.write(line)

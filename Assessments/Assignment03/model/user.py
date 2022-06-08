@@ -66,7 +66,7 @@ class User:
         # login_user_role = ''
         login_user_info = ""
         # Open all 3 user files
-        with open("data\\user.txt", "r", encoding="utf-8") as userFile:
+        with open("data/user.txt", "r", encoding="utf-8") as userFile:
             # # Relocate cursors to beginning of files
             # adminFile.seek(0, 0)
             # studFile.seek(0, 0)
@@ -93,7 +93,7 @@ class User:
         username_exists = False
         # login_user_role = ''
         # Open all 3 user files
-        with open("data\\user.txt", "r", encoding="utf-8") as userFile:
+        with open("data/user.txt", "r", encoding="utf-8") as userFile:
             # # Relocate cursors to beginning of files
             # adminFile.seek(0, 0)
             # studFile.seek(0, 0)

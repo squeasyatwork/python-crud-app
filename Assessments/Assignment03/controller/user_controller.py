@@ -46,7 +46,7 @@ def login_post():
                 usr = generate_user(user_info)
                 User.current_login_user = usr
                 # print("LOGIN SUCCESS!!", user_info)
-                print(User.current_login_user.role)
+                # print(User.current_login_user.role)
                 return render_result(msg="Login success!")
             else:
                 # print("WRONG CREDENTIALS!!")

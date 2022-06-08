@@ -13,7 +13,7 @@ class Admin(User):
         self.password = password
         if not self.check_username_exist(username):
             # !Enter register_time
-            with open("data\\user.txt", "a") as adminFile:
+            with open("data/user.txt", "a") as adminFile:
                 adminFile.write(self.generate_unique_user_id() + ";;;" + username
                                 + ";;;" + password + ";;;" + self.register_time
                                 + ";;;" + self.role + "\n")
